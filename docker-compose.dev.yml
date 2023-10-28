@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  gettasksdone-server:
+    build:
+      context: .
+      target: development
+    ports:
+      - "8000:8000"
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - MYSQL_URL=jdbc:mysql://getTasksDone_dbnet/getTasksDone
+    volumes:
+      - ./:/app
+    depends_on:
+      - getTasksDone_dbnet
+
+  getTasksDone_dbnet:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=getTasksDone
+      - MYSQL_PASSWORD=getTasksDone
+      - MYSQL_DATABASE=getTasksDone
+    volumes:
+      - getTasksDone_db_data:/var/lib/mysql
+      - getTasksDone_db_config:/etc/mysql/conf.d
+volumes:
+  getTasksDone_db_data:
+  getTasksDone_db_config:
