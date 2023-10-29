@@ -13,7 +13,9 @@ services:
     volumes:
       - ./:/app
     depends_on:
-      - getTasksDone_dbnet
+      getTasksDone_dbnet:
+        condition: service_healthy
+        restart: true
 
   getTasksDone_dbnet:
     image: mysql:8.0
@@ -28,6 +30,13 @@ services:
     volumes:
       - getTasksDone_db_data:/var/lib/mysql
       - getTasksDone_db_config:/etc/mysql/conf.d
+      - ./database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 volumes:
   getTasksDone_db_data:
   getTasksDone_db_config:
