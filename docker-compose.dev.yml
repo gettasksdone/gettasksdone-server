@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  gettasksdone-server:
+  server:
     build:
       context: .
       target: development
@@ -9,15 +9,14 @@ services:
       - "8080:8080"
     environment:
       - SERVER_PORT=8080
-      - MYSQL_URL=jdbc:mysql://getTasksDone_dbnet/getTasksDone
+      - MYSQL_URL=jdbc:mysql://db/getTasksDone
     volumes:
       - ./:/app
     depends_on:
-      getTasksDone_dbnet:
+      db:
         condition: service_healthy
         restart: true
-
-  getTasksDone_dbnet:
+  db:
     image: mysql:8.0
     ports:
       - "3306:3306"
@@ -28,8 +27,8 @@ services:
       - MYSQL_PASSWORD=getTasksDone
       - MYSQL_DATABASE=getTasksDone
     volumes:
-      - getTasksDone_db_data:/var/lib/mysql
-      - getTasksDone_db_config:/etc/mysql/conf.d
+      - db_data:/var/lib/mysql
+      - db_config:/etc/mysql/conf.d
       - ./database:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -38,5 +37,5 @@ services:
       retries: 5
       start_period: 30s
 volumes:
-  getTasksDone_db_data:
-  getTasksDone_db_config:
+  db_data:
+  db_config:
