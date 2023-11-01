@@ -22,28 +22,28 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @Column(nullable = false)
     private String email;
     @Column(nullable = false)
     private String password;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "superior")
+    @JoinColumn(name = "superior_id")
     private List<InfoUsuario> infoUsuarios = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "UsuarioTarea",
+    @JoinTable(name = "usuario_tarea",
         joinColumns=
-            @JoinColumn(name="idUsuario", referencedColumnName="id"),
+            @JoinColumn(name="id_usuario_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idTarea", referencedColumnName="id")
+            @JoinColumn(name="tarea_id", referencedColumnName="id")
     )
     private List<Tarea> tareas = new ArrayList<>();
     @ManyToMany
     @JoinTable(name = "UsuarioProyecto",
         joinColumns=
-            @JoinColumn(name="idUsuario", referencedColumnName="id"),
+            @JoinColumn(name="id_usuario_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idProyecto", referencedColumnName="id")
+            @JoinColumn(name="proyecto_id", referencedColumnName="id")
     )
     private List<Proyecto> proyectos = new ArrayList<>();
 }

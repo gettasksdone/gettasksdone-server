@@ -15,11 +15,11 @@ public class CheckItem {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @ManyToOne
-    private Tarea idTarea;
+    private Tarea tarea;
     @Column(nullable = false)
     private String contenido;
     @Column(nullable = false)
-    private boolean estaMarcado;
+    private boolean esta_marcado;
 }

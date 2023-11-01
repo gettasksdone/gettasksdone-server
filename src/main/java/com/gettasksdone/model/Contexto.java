@@ -20,10 +20,10 @@ public class Contexto {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @Column(nullable = false)
     private String nombre;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "idContexto")
+    @JoinColumn(name = "contexto_id")
     private List<Tarea> tareas = new ArrayList<>();
 }

@@ -17,7 +17,7 @@ public class InfoUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @OneToOne(cascade = CascadeType.ALL)
     private Usuario idUsuario;
     @ManyToOne(cascade = CascadeType.ALL)

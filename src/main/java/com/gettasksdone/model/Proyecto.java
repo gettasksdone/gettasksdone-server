@@ -23,42 +23,42 @@ public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @Column(nullable = false)
     private String nombre;
     @Column(nullable = false)
-    private LocalDateTime fechaInicio;
+    private LocalDateTime inicio;
     @Column(nullable = false)
-    private LocalDateTime fechaFin;
+    private LocalDateTime fin;
     @Column(nullable = false)
     private String descripcion;
     @Column(nullable = false)
     private String estado;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name ="idProyecto")
+    @JoinColumn(name ="proyecto_id")
     private List<Tarea> tareas = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "NotaProyecto",
+    @JoinTable(name = "nota_proyecto",
         joinColumns=
-            @JoinColumn(name="idProyecto", referencedColumnName="id"),
+            @JoinColumn(name="proyecto_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idNota", referencedColumnName="id")
+            @JoinColumn(name="id_nota_id", referencedColumnName="id")
     )
     private List<Nota> notas = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "EtiquetaProyecto",
+    @JoinTable(name = "etiqueta_proyecto",
         joinColumns=
-            @JoinColumn(name="idProyecto", referencedColumnName="id"),
+            @JoinColumn(name="proyecto_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idEtiqueta", referencedColumnName="id")
+            @JoinColumn(name="id_etiqueta_id", referencedColumnName="id")
     )
     private List<Etiqueta> etiquetas = new ArrayList<>();
     @ManyToMany
     @JoinTable(name = "UsuarioProyecto",
         joinColumns=
-            @JoinColumn(name="idProyecto", referencedColumnName="id"),
+            @JoinColumn(name="proyecto_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idUsuario", referencedColumnName="id")
+            @JoinColumn(name="id_usuario_id", referencedColumnName="id")
     )
     private List<Usuario> usuarios = new ArrayList<>();
 }

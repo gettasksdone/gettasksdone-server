@@ -21,25 +21,25 @@ public class Nota {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @Column(nullable = false)
     private String contenido;
     @Column(nullable = false)
-    private LocalDateTime fechaCreacion;
+    private LocalDateTime creacion;
     @ManyToMany
-    @JoinTable(name = "NotaTarea",
+    @JoinTable(name = "nota_tarea",
         joinColumns=
-            @JoinColumn(name="idNota", referencedColumnName="id"),
+            @JoinColumn(name="id_nota_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idTarea", referencedColumnName="id")
+            @JoinColumn(name="tarea_id", referencedColumnName="id")
     )
     private List<Tarea> tareas = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "NotaProyecto",
+    @JoinTable(name = "nota_proyecto",
         joinColumns=
-            @JoinColumn(name="idNota", referencedColumnName="id"),
+            @JoinColumn(name="id_nota_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idProyecto", referencedColumnName="id")
+            @JoinColumn(name="proyecto_id", referencedColumnName="id")
     )
     private List<Proyecto> proyectos = new ArrayList<>();
 }

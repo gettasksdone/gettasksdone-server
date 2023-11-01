@@ -20,23 +20,23 @@ public class Etiqueta {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @Column(nullable = false)
     private String nombre;
     @ManyToMany
-    @JoinTable(name = "EtiquetaTarea",
+    @JoinTable(name = "etiqueta_tarea",
         joinColumns=
-            @JoinColumn(name="idEtiqueta", referencedColumnName="id"),
+            @JoinColumn(name="id_etiqueta_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idTarea", referencedColumnName="id")
+            @JoinColumn(name="tarea_id", referencedColumnName="id")
     )
     private List<Tarea> tareas = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "EtiquetaProyecto",
+    @JoinTable(name = "etiqueta_proyecto",
         joinColumns=
-            @JoinColumn(name="idEtiqueta", referencedColumnName="id"),
+            @JoinColumn(name="id_etiqueta_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idProyecto", referencedColumnName="id")
+            @JoinColumn(name="proyecto_id", referencedColumnName="id")
     )
     private List<Proyecto> proyectos = new ArrayList<>();
 }

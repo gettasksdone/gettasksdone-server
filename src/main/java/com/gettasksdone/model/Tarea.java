@@ -24,45 +24,45 @@ public class Tarea {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-    private int id;
+    private Long id;
     @ManyToOne
-    private Proyecto idProyecto;
+    private Proyecto proyecto;
     @ManyToOne
-    private Contexto idContexto;
+    private Contexto contexto;
     @Column(nullable = false)
     private String descripcion;
     @Column(nullable = false)
-    private LocalDateTime fechaCreacion;
-    private LocalDateTime fechaVencimiento;
+    private LocalDateTime creacion;
+    private LocalDateTime vencimiento;
     @Column(nullable = false)
     private String estado;
     @Column(nullable = false)
     private int prioridad;
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name ="idTarea")
+    @JoinColumn(name ="tarea_id")
     private List<CheckItem> checkItems = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "NotaTarea",
+    @JoinTable(name = "nota_tarea",
         joinColumns=
-            @JoinColumn(name="idTarea", referencedColumnName="id"),
+            @JoinColumn(name="tarea_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idNota", referencedColumnName="id")
+            @JoinColumn(name="id_nota_id", referencedColumnName="id")
     )
     private List<Nota> notas = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "EtiquetaTarea",
+    @JoinTable(name = "etiqueta_tarea",
         joinColumns=
-            @JoinColumn(name="idTarea", referencedColumnName="id"),
+            @JoinColumn(name="tarea_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idEtiqueta", referencedColumnName="id")
+            @JoinColumn(name="id_etiqueta_id", referencedColumnName="id")
     )
     private List<Nota> etiquetas = new ArrayList<>();
     @ManyToMany
-    @JoinTable(name = "UsuarioTarea",
+    @JoinTable(name = "usuario_tarea",
         joinColumns=
-            @JoinColumn(name="idTarea", referencedColumnName="id"),
+            @JoinColumn(name="tarea_id", referencedColumnName="id"),
         inverseJoinColumns=
-            @JoinColumn(name="idUsuario", referencedColumnName="id")
+            @JoinColumn(name="id_usuario_id", referencedColumnName="id")
     )
     private List<Usuario> usuarios = new ArrayList<>();
 }
