@@ -6,16 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.gettasksdone.model.CheckItem;
-import com.gettasksdone.model.Contexto;
-import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.model.InfoUsuario;
 import com.gettasksdone.model.Nota;
 import com.gettasksdone.model.Proyecto;
 import com.gettasksdone.model.Tarea;
 import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.CheckItemRepository;
-import com.gettasksdone.repository.ContextoRepository;
-import com.gettasksdone.repository.EtiquetaRepository;
 import com.gettasksdone.repository.InfoUsuarioRepository;
 import com.gettasksdone.repository.NotaRepository;
 import com.gettasksdone.repository.ProyectoRepository;
@@ -36,10 +32,6 @@ public class RootController {
     private NotaRepository notaRepo;
     @Autowired
     private InfoUsuarioRepository infoUsuarioRepo;
-    @Autowired
-    private EtiquetaRepository etiquetaRepo;
-    @Autowired
-    private ContextoRepository contextoRepo;
     @Autowired
     private CheckItemRepository checkRepo;
 
@@ -71,16 +63,6 @@ public class RootController {
     @GetMapping("/notes")
 	public List<Nota> allNotes(){
 		return notaRepo.findAll();
-	}
-
-    @GetMapping("/tags")
-	public List<Etiqueta> allTags(){
-		return etiquetaRepo.findAll();
-	}
-
-    @GetMapping("/contexts")
-	public List<Contexto> allContexts(){
-		return contextoRepo.findAll();
 	}
 
     @GetMapping("/checks")
