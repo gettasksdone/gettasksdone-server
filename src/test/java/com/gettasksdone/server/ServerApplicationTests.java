@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class ServerApplicationTests {
 
+	//Esto da falla si usamos workflow
 	//@Test
 	void contextLoads() {
 	}
