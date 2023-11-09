@@ -2,9 +2,9 @@ name: build-jar
 
 # Cambiamos feature a la rama main
 on:
-  push:
+  pull_request:
     branches:
-      - main      # El workflow se activa para cualquier push en las ramas feature/**
+      - main      # El workflow se activa para cualquier pull request en las rama main 
 jobs:
 
 # **************************************************************************

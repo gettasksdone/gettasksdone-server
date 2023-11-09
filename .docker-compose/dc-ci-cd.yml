@@ -8,7 +8,7 @@ services:
   #*********************************************************************
 
     restart: always
-    image: ghcr.io/hackingsecurity/feature:4eb7faa653321b07992ba4bcf1fbd37506bc4ef1
+    image: ghcr.io/gettasksdone/main:latest
     container_name: spring_boot_server
     ports:
       - "8000:8000"

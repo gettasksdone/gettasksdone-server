@@ -8,7 +8,7 @@ docker-compose -f dc-ci-cd.yml down
 
 # Descargar la última versión de la imagen
 echo "Comprobando la última versión de la imagen"
-#docker-compose -f dc-ci-cd.yml pull server
+docker-compose -f dc-ci-cd.yml pull server
 
 # Levantar los servicios nuevamente
 echo "Iniciado los servicios..."
