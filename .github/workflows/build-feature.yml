@@ -4,7 +4,7 @@ name: build-jar
 on:
   push:
     branches:
-      - feature      # El workflow se activa para cualquier push en las ramas feature/**
+      - main      # El workflow se activa para cualquier push en las ramas feature/**
 jobs:
 
 # **************************************************************************
