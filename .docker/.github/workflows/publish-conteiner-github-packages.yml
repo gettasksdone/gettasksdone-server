@@ -1,0 +1,203 @@
+name: build-docker
+
+########################################################
+# 0 -> Trigger desencadene -> contenedor -> dockerHub
+########################################################
+on:
+#NO funciona
+  # workflow_run:
+  #   workflows: ["build-jar"]
+  #   types: [completed]
+  #   # branches-ignore: 
+  #   #   - "feature"
+  # # repository_dispatch:
+  # #   types: [publish-artifact-dockerHub-event]
+  repository_dispatch:
+    types: [build-docker-event]
+
+jobs:
+  download-artifact-job:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+
+      ########################################################
+      # 1- Comprobamos que el fichero cogido sea el bueno
+      ########################################################
+      - run: echo ${{ github.event.client_payload.checksum }}
+
+      - name: comprobacion del checksum
+        run: |
+          echo ${{ github.event.client_payload.checksum }}
+
+      - uses: dawidd6/action-download-artifact@v2
+        id: download-artifact
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: build-feature.yml
+          workflow_conclusion: success
+          name: artifactjar
+          path: /tmp/artifactjar
+
+      - name: Listamos la carpeta donde esta nuestro artefacto
+        run: ls -R /tmp/artifactjar
+
+
+      - name: checksum del fichero descargado
+        if: success()
+        id: hash
+        run: echo "HASH=$(sha1sum /tmp/artifactjar/${{ github.event.client_payload.artifact_name }} | awk '{ print $1 }')" >> $GITHUB_ENV
+
+
+      - name: compare checksum
+        run: |
+          if [ "${{ env.HASH }}" == "${{ github.event.client_payload.checksum }}" ]; then
+              echo "Los checksum son iguales!"
+          else
+              echo "Ojo los check sun no son iguales"
+              exit 1;
+          fi
+
+      ####################################################### 
+      #Preparamos los ficheros necesarios para construir
+      #nuestro contendor de docker donde necesitaremos:
+      #1) -> Dockerfile ( nuestra rama)
+      #2) -> Fichero jar (git accions)
+      #######################################################
+      
+      - uses: actions/checkout@v3        
+        if: success()
+      - run: |
+          echo print the current directory show files
+          ls -la 
+          echo preparing docker build context
+          cp .docker/Dockerfile /tmp/Dockerfile
+          cp /tmp/artifactjar/${{ github.event.client_payload.artifact_name }} /tmp/${{ github.event.client_payload.artifact_name }}
+          ls -la /tmp
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dockerBuildContext
+          path: |
+            /tmp/Dockerfile
+            /tmp/${{ github.event.client_payload.artifact_name }}
+
+
+#**************************************************************
+# 1 - una vez terminando nuestro primer job ahora hacemos la
+#   la parte del docker
+#**************************************************************
+  docker-job:
+
+    needs:
+      - download-artifact-job
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+
+    steps: 
+
+      ######################################################## 
+      # 1- poder compilar las imagenes
+      ######################################################## 
+      - name : Set up QEMU
+        uses : docker/setup-qemu-action@v2
+
+      ######################################################## 
+      # 2- Configurar docker en la maguina virtual
+      #######################################################  
+      - name : Set up Docker Buildx
+        uses : docker/setup-buildx-action@v2
+
+      ######################################################## 
+      # 3- Login con Docker -> tambien podemos usar github packages
+      ########################################################      
+      - name : Login to Docker Hub
+        uses : docker/login-action@v2
+        with :
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password : ${{ secrets.GITHUB_TOKEN }} 
+
+        ######################################################## 
+        # 4- Download artifact
+        ######################################################## 
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dockerBuildContext
+          path: ./dockerBuildContext
+
+        ######################################################## 
+        # 5- Lista dockerBuild
+        ######################################################## 
+      - name: Display structure of downloaded files
+        run: ls -R dockerBuildContext
+
+
+        ######################################################## 
+        # 5- Lista 
+        ######################################################## 
+      - name: Display structure of downloaded files
+        run: |
+          JAR_FILE=${{ github.event.client_payload.artifact_name }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          echo $JARFILE
+          echo $DB_PASSWORD
+
+
+     
+        ######################################################## 
+        # 5- Display structure
+        ######################################################### 
+      - name : Build and push image using action 
+        uses : docker/build-push-action@v4 
+        with :
+          context : ./dockerBuildContext # Context where Dockerfile and artifact(.jar, .war ...) lives
+          file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
+          #Parameters that our Dockerfile need.
+          build-args: |      
+            JAR_FILE=${{ github.event.client_payload.artifact_name }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          push : true # Push image to registry, false by deafult..
+          #me modifico el nombre de github 
+          tags : ghcr.io/${{ github.repository_owner}}/feature:${{ github.sha }} # The image ful name, include repository, user, image name and tag 
+          #tags: ghcr.io/hackingsecurity/feature:${{ github.sha }}
+
+
+
+        ######################################################## 
+        # 5- Subir la imagen a docker-hub
+        ######################################################## 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }} # or DOCKERHUB_PASSWORD
+
+
+     ######################################################## 
+        # 5- Display structure
+        ######################################################### 
+      - name : Build and push image using action 
+        uses : docker/build-push-action@v4 
+        with :
+          context : ./dockerBuildContext # Context where Dockerfile and artifact(.jar, .war ...) lives
+          file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
+          #Parameters that our Dockerfile need.
+          build-args: |      
+            JAR_FILE=${{ github.event.client_payload.artifact_name }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          push : true # Push image to registry, false by deafult..
+          #me modifico el nombre de github 
+          # tags : ghcr.io/${{ github.repository_owner}}/feature:${{ github.sha }} # The image ful name, include repository, user, image name and tag 
+          #tags: ghcr.io/hackingsecurity/feature:${{ github.sha }}
+          tags: 0sudosu1/tfg:feature-${{ github.sha }}
+
