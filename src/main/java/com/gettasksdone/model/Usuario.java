@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Entity
@@ -24,8 +23,6 @@ public class Usuario {
     private String email;
     @Column(nullable = false)
     private String password;
-    @OneToOne(cascade = CascadeType.ALL)
-    private InfoUsuario infoUsuario;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_tarea",
         joinColumns=

@@ -38,22 +38,23 @@ public class UserInfoController {
 	public InfoUsuario createUserData(@RequestBody InfoUsuario userData) {
         Optional<Usuario> user = usuarioRepo.findById(userData.getIdUsuario().getId());
         userData.setIdUsuario(user.get());
-        return userData;
-		//return infoUsuarioRepo.save(userData);
+		return infoUsuarioRepo.save(userData);
 	}
 
     @PatchMapping("/update/{id}")
 	public InfoUsuario updateUserData(@PathVariable("id") Long id ,@RequestBody InfoUsuario userData) {
+        Optional<Usuario> user = usuarioRepo.findById(userData.getIdUsuario().getId());
+        userData.setIdUsuario(user.get());
 		return infoUsuarioRepo.save(userData);
 	}
 
     @DeleteMapping("/delete/{id}")
 	public String deleteUserData(@PathVariable("id") Long id) {
         if(infoUsuarioRepo.findById(id).isEmpty()){
-            return "Tag not found";
+            return "User Info not found";
         }else{
             infoUsuarioRepo.deleteById(id);
-            return "Tag deleted";
+            return "User Info deleted";
         }
 	}
 }
