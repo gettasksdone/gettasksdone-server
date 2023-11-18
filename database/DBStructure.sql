@@ -19,7 +19,6 @@ CREATE TABLE usuario(
 CREATE TABLE info_usuario(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     id_usuario_id int NOT NULL,
-    superior_id int NOT NULL,
     nombre TEXT NOT NULL,
     telefono int NOT NULL,
     puesto TEXT NOT NULL,
@@ -175,8 +174,7 @@ CREATE TABLE etiqueta_proyecto(
 -- Indices de la tabla `info_usuario`
 --
 ALTER TABLE `info_usuario`
-  ADD KEY `usuario` (`id_usuario_id`),
-  ADD KEY `Superior` (`superior_id`);
+  ADD KEY `usuario` (`id_usuario_id`);
 
 --
 -- Indices de la tabla `check_item`
@@ -237,8 +235,7 @@ ALTER TABLE `etiqueta_proyecto`
 -- Filtros para la tabla `info_usuario`
 --
 ALTER TABLE `info_usuario`
-  ADD CONSTRAINT `InfoUsuario_fk1` FOREIGN KEY (`id_usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `InfoUsuario_fk2` FOREIGN KEY (`superior_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `InfoUsuario_fk1` FOREIGN KEY (`id_usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `check_item`
@@ -266,7 +263,7 @@ ALTER TABLE `tarea`
 ALTER TABLE `usuario_tarea`
   ADD CONSTRAINT `UsuarioTarea_fk1` FOREIGN KEY (`id_usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `UsuarioTarea_fk2` FOREIGN KEY (`tarea_id`) REFERENCES `tarea` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-    
+
 --
 -- Filtros para la tabla `nota_tarea`
 --

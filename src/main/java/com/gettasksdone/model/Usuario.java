@@ -2,7 +2,6 @@ package com.gettasksdone.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Entity
@@ -25,9 +24,8 @@ public class Usuario {
     private String email;
     @Column(nullable = false)
     private String password;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "superior_id")
-    private List<InfoUsuario> infoUsuarios = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    private InfoUsuario infoUsuario;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_tarea",
         joinColumns=

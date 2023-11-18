@@ -37,9 +37,7 @@ public class UserInfoController {
     @PostMapping("/create")
 	public InfoUsuario createUserData(@RequestBody InfoUsuario userData) {
         Optional<Usuario> user = usuarioRepo.findById(userData.getIdUsuario().getId());
-        Optional<Usuario> superior = usuarioRepo.findById(userData.getSuperior().getId());
         userData.setIdUsuario(user.get());
-        userData.setSuperior(superior.get());
         return userData;
 		//return infoUsuarioRepo.save(userData);
 	}

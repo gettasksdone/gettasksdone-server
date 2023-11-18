@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.gettasksdone.model.InfoUsuario;
-import com.gettasksdone.model.Usuario;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,5 +13,4 @@ public interface InfoUsuarioRepository extends JpaRepository<InfoUsuario, Long>{
     Optional<InfoUsuario> findById(Long id);
     List<InfoUsuario> findByNombre(@Param("nombre") String nombre);
     List<InfoUsuario> findByDepartamento(@Param("departamento") String departamento);
-    List<InfoUsuario> findBySuperior(@Param("superior_id") Usuario superior_id);
 }

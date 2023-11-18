@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 
@@ -18,8 +17,6 @@ public class InfoUsuario {
     private Long id;
     @OneToOne(cascade = CascadeType.ALL)
     private Usuario idUsuario;
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Usuario superior;
     @Column(nullable = false)
     private String nombre;
     @Column(nullable = false)
