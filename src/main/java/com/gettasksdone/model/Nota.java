@@ -3,7 +3,7 @@ package com.gettasksdone.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +24,7 @@ public class Nota {
     private String contenido;
     @Column(nullable = false)
     private LocalDateTime creacion;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "nota_tarea",
         joinColumns=
             @JoinColumn(name="id_nota_id", referencedColumnName="id"),
@@ -32,7 +32,7 @@ public class Nota {
             @JoinColumn(name="tarea_id", referencedColumnName="id")
     )
     private List<Tarea> tareas = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "nota_proyecto",
         joinColumns=
             @JoinColumn(name="id_nota_id", referencedColumnName="id"),

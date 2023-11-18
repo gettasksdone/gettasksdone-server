@@ -35,7 +35,7 @@ public class Proyecto {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name ="proyecto_id")
     private List<Tarea> tareas = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "nota_proyecto",
         joinColumns=
             @JoinColumn(name="proyecto_id", referencedColumnName="id"),
@@ -43,7 +43,7 @@ public class Proyecto {
             @JoinColumn(name="id_nota_id", referencedColumnName="id")
     )
     private List<Nota> notas = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "etiqueta_proyecto",
         joinColumns=
             @JoinColumn(name="proyecto_id", referencedColumnName="id"),
@@ -51,7 +51,7 @@ public class Proyecto {
             @JoinColumn(name="id_etiqueta_id", referencedColumnName="id")
     )
     private List<Etiqueta> etiquetas = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "UsuarioProyecto",
         joinColumns=
             @JoinColumn(name="proyecto_id", referencedColumnName="id"),

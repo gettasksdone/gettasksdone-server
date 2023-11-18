@@ -28,7 +28,7 @@ public class Usuario {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "superior_id")
     private List<InfoUsuario> infoUsuarios = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_tarea",
         joinColumns=
             @JoinColumn(name="id_usuario_id", referencedColumnName="id"),
@@ -36,7 +36,7 @@ public class Usuario {
             @JoinColumn(name="tarea_id", referencedColumnName="id")
     )
     private List<Tarea> tareas = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "UsuarioProyecto",
         joinColumns=
             @JoinColumn(name="id_usuario_id", referencedColumnName="id"),

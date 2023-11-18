@@ -23,9 +23,9 @@ public class Tarea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Proyecto proyecto;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Contexto contexto;
     @Column(nullable = false)
     private String descripcion;
@@ -39,7 +39,7 @@ public class Tarea {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name ="tarea_id")
     private List<CheckItem> checkItems = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "nota_tarea",
         joinColumns=
             @JoinColumn(name="tarea_id", referencedColumnName="id"),
@@ -47,7 +47,7 @@ public class Tarea {
             @JoinColumn(name="id_nota_id", referencedColumnName="id")
     )
     private List<Nota> notas = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "etiqueta_tarea",
         joinColumns=
             @JoinColumn(name="tarea_id", referencedColumnName="id"),
@@ -55,7 +55,7 @@ public class Tarea {
             @JoinColumn(name="id_etiqueta_id", referencedColumnName="id")
     )
     private List<Nota> etiquetas = new ArrayList<>();
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_tarea",
         joinColumns=
             @JoinColumn(name="tarea_id", referencedColumnName="id"),

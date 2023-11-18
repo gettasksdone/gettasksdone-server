@@ -37,7 +37,7 @@ public class ContextoController {
 	}
 
     @PatchMapping("/update/{id}")
-	public Contexto updateContext(@PathVariable int id ,@RequestBody Contexto contexto) {
+	public Contexto updateContext(@PathVariable("id") Long id ,@RequestBody Contexto contexto) {
 		return contextoRepo.save(contexto);
 	}
 

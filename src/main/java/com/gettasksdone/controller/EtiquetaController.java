@@ -37,7 +37,7 @@ public class EtiquetaController {
 	}
 
     @PatchMapping("/update/{id}")
-	public Etiqueta updateTag(@PathVariable int id ,@RequestBody Etiqueta etiqueta) {
+	public Etiqueta updateTag(@PathVariable("id") Long id ,@RequestBody Etiqueta etiqueta) {
 		return etiquetaRepo.save(etiqueta);
 	}
 
