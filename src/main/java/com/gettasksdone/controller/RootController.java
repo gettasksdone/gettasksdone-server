@@ -7,17 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.gettasksdone.model.CheckItem;
 import com.gettasksdone.model.Nota;
-import com.gettasksdone.model.Proyecto;
 import com.gettasksdone.repository.CheckItemRepository;
 import com.gettasksdone.repository.NotaRepository;
-import com.gettasksdone.repository.ProyectoRepository;
 
 
 @RestController
 @RequestMapping("/api")
 public class RootController {
-    @Autowired
-    private ProyectoRepository proyectoRepo;
     @Autowired
     private NotaRepository notaRepo;
     @Autowired
@@ -27,11 +23,6 @@ public class RootController {
     public String prueba(){
         return "El API funciona";
     }
-
-    @GetMapping("/projects")
-	public List<Proyecto> allProjects(){
-		return proyectoRepo.findAll();
-	}
 
     @GetMapping("/notes")
 	public List<Nota> allNotes(){

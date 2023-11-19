@@ -106,7 +106,6 @@ CREATE TABLE usuario_proyecto(
 
 CREATE TABLE tarea(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    proyecto_id int NOT NULL,
     contexto_id int NOT NULL,
     descripcion TEXT NOT NULL,
     creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -162,6 +161,17 @@ CREATE TABLE etiqueta_tarea(
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `proyecto_tareas`
+--
+
+CREATE TABLE proyecto_tareas(  
+    proyecto_id int NOT NULL,
+    tareas_id int NOT NULL
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `etiqueta_proyecto`
 --
 
@@ -193,7 +203,6 @@ ALTER TABLE `usuario_proyecto`
 -- Indices de la tabla `tarea`
 --
 ALTER TABLE `tarea`
-  ADD KEY `proyecto` (`proyecto_id`),
   ADD KEY `contexto` (`contexto_id`);
 
 --
@@ -225,6 +234,13 @@ ALTER TABLE `etiqueta_tarea`
   ADD KEY `tarea` (`tarea_id`);
 
 --
+-- Indices de la tabla `proyecto_tareas`
+--
+ALTER TABLE `proyecto_tareas`
+  ADD KEY `proyecto` (`proyecto_id`),
+  ADD KEY `tarea` (`tareas_id`);
+
+--
 -- Indices de la tabla `etiqueta_proyecto`
 --
 ALTER TABLE `etiqueta_proyecto`
@@ -254,7 +270,6 @@ ALTER TABLE `usuario_proyecto`
 -- Filtros para la tabla `tarea`
 --
 ALTER TABLE `tarea`
-  ADD CONSTRAINT `Tarea_fk1` FOREIGN KEY (`proyecto_id`) REFERENCES `proyecto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Tarea_fk2` FOREIGN KEY (`contexto_id`) REFERENCES `contexto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
   
 --
@@ -284,7 +299,14 @@ ALTER TABLE `nota_proyecto`
 ALTER TABLE `etiqueta_tarea`
   ADD CONSTRAINT `EtiquetaTarea_fk1` FOREIGN KEY (`id_etiqueta_id`) REFERENCES `etiqueta` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `EtiquetaTarea_fk2` FOREIGN KEY (`tarea_id`) REFERENCES `tarea` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-      
+
+--
+-- Filtros para la tabla `etiqueta_tarea`
+--
+ALTER TABLE `proyecto_tareas`
+  ADD CONSTRAINT `ProyectoTareas_fk1` FOREIGN KEY (`proyecto_id`) REFERENCES `proyecto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `ProyectoTareas_fk2` FOREIGN KEY (`tareas_id`) REFERENCES `tarea` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
 --
 -- Filtros para la tabla `etiqueta_proyecto`
 --

@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,15 +28,15 @@ public class Proyecto {
     private Long id;
     @Column(nullable = false)
     private String nombre;
-    @Column(nullable = false)
+    @Column(nullable = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime inicio;
-    @Column(nullable = false)
+    @Column(nullable = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fin;
     @Column(nullable = false)
     private String descripcion;
     @Column(nullable = false)
     private String estado;
-    @OneToMany(cascade = CascadeType.ALL) @JoinColumn(name ="proyecto_id")
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tarea> tareas = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "nota_proyecto",

@@ -42,11 +42,25 @@ public class TasksController {
     }
 
     @PostMapping("/create")
-    public Tarea createTask(@RequestBody Tarea task){
-        Optional<Proyecto> project = proyectoRepo.findById(task.getProyecto().getId());
-        task.setProyecto(project.get());
-        Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
-        task.setContexto(context.get());
-        return tareaRepo.save(task);
+    public Tarea createTask(@RequestBody Tarea task, @RequestParam("ProjectID") long projectID){
+        Optional<Proyecto> project = proyectoRepo.findById(projectID);
+        Tarea tarea;
+        List<Tarea> projectTasks;
+        if(project.isEmpty()){
+            return null;
+        }else{
+            Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
+            if(context.isEmpty()){
+                return null;
+            }else{
+                task.setContexto(context.get());
+                tarea = tareaRepo.save(task);
+                projectTasks = project.get().getTareas();
+                projectTasks.add(tarea);
+                project.get().setTareas(projectTasks);
+                proyectoRepo.save(project.get());
+                return tarea;
+            }
+        }
     }
 }
