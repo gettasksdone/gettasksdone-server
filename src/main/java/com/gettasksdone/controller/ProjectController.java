@@ -1,11 +1,9 @@
 package com.gettasksdone.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +26,28 @@ public class ProjectController {
 		return proyectoRepo.findAll();
 	}
 
+    @GetMapping("/{id}")
+    public Optional<Proyecto> findById(@PathVariable("id") Long id){
+        return proyectoRepo.findById(id);
+    }
+
     @PostMapping("/create")
     public Proyecto createProject(@RequestBody Proyecto project){
         return proyectoRepo.save(project);
+    }
+    
+    @PatchMapping("/update/{id}")
+    public Proyecto updateProject(@PathVariable("id") Long id, @RequestBody Proyecto project){
+        return proyectoRepo.save(project);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteProject(@PathVariable("id") Long id){
+        if(proyectoRepo.findById(id).isEmpty()){
+            return "Project not found";
+        }else{
+            proyectoRepo.deleteById(id);
+            return "Project deleted";
+        }
     }
 }
