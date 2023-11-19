@@ -32,8 +32,7 @@ public class Proyecto {
     private String descripcion;
     @Column(nullable = false)
     private String estado;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name ="proyecto_id")
+    @OneToMany(cascade = CascadeType.ALL) @JoinColumn(name ="proyecto_id")
     private List<Tarea> tareas = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "nota_proyecto",

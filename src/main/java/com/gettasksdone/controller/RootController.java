@@ -8,19 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gettasksdone.model.CheckItem;
 import com.gettasksdone.model.Nota;
 import com.gettasksdone.model.Proyecto;
-import com.gettasksdone.model.Tarea;
 import com.gettasksdone.repository.CheckItemRepository;
 import com.gettasksdone.repository.NotaRepository;
 import com.gettasksdone.repository.ProyectoRepository;
-import com.gettasksdone.repository.TareaRepository;
 
 
 @RestController
 @RequestMapping("/api")
 public class RootController {
-    //Cambio para la rama nueva
-    @Autowired
-    private TareaRepository tareaRepo;
     @Autowired
     private ProyectoRepository proyectoRepo;
     @Autowired
@@ -32,11 +27,6 @@ public class RootController {
     public String prueba(){
         return "El API funciona";
     }
-
-    @GetMapping("/tasks")
-	public List<Tarea> allTasks(){
-		return tareaRepo.findAll();
-	}
 
     @GetMapping("/projects")
 	public List<Proyecto> allProjects(){
