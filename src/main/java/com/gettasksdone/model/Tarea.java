@@ -25,7 +25,7 @@ public class Tarea {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Contexto contexto;
     @Column(nullable = false)
     private String descripcion;

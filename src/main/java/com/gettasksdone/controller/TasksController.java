@@ -63,4 +63,32 @@ public class TasksController {
             }
         }
     }
+
+    @PatchMapping("/update/{id}")
+    public Tarea updateTask(@RequestBody Tarea task, @PathVariable("id") Long id, @RequestParam("ProjectID") long projectID){
+        Optional<Proyecto> project = proyectoRepo.findById(projectID);
+        Tarea tarea;
+        if(project.isEmpty()){
+            return null;
+        }else{
+            Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
+            if(context.isEmpty()){
+                return null;
+            }else{
+                task.setContexto(context.get());
+                tarea = tareaRepo.save(task);
+                return tarea;
+            }
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteTask(@PathVariable("id") Long id){
+        if(tareaRepo.findById(id).isEmpty()){
+            return "Task not found";
+        }else{
+            tareaRepo.deleteById(id);
+            return "Task deleted";
+        }
+    }
 }
