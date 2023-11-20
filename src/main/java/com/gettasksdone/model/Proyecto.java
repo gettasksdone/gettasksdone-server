@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,15 +35,9 @@ public class Proyecto {
     private String estado;
     @OneToMany
     private List<Tarea> tareas = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "nota_proyecto",
-        joinColumns=
-            @JoinColumn(name="proyecto_id", referencedColumnName="id"),
-        inverseJoinColumns=
-            @JoinColumn(name="id_nota_id", referencedColumnName="id")
-    )
+    @OneToMany
     private List<Nota> notas = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "etiqueta_proyecto",
         joinColumns=
             @JoinColumn(name="proyecto_id", referencedColumnName="id"),
@@ -54,7 +45,7 @@ public class Proyecto {
             @JoinColumn(name="id_etiqueta_id", referencedColumnName="id")
     )
     private List<Etiqueta> etiquetas = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "UsuarioProyecto",
         joinColumns=
             @JoinColumn(name="proyecto_id", referencedColumnName="id"),

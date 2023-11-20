@@ -56,7 +56,9 @@ CREATE TABLE etiqueta(
 CREATE TABLE nota(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contenido TEXT NOT NULL,
-    creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    proyecto_id int,
+    tarea_id int
 );
 
 -- --------------------------------------------------------
@@ -128,22 +130,22 @@ CREATE TABLE usuario_tarea(
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `nota_tarea`
+-- Estructura de tabla para la tabla `tarea_notas`
 --
 
-CREATE TABLE nota_tarea(  
-    id_nota_id int NOT NULL,
+CREATE TABLE tarea_notas(  
+    notas_id int NOT NULL,
     tarea_id int NOT NULL
 );
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `nota_proyecto`
+-- Estructura de tabla para la tabla `proyecto_notas`
 --
 
-CREATE TABLE nota_proyecto(  
-    id_nota_id int NOT NULL,
+CREATE TABLE proyecto_notas(  
+    notas_id int NOT NULL,
     proyecto_id int NOT NULL
 );
 
@@ -213,16 +215,16 @@ ALTER TABLE `usuario_tarea`
   ADD KEY `tarea` (`tarea_id`);
 
 --
--- Indices de la tabla `nota_tarea`
+-- Indices de la tabla `tarea_notas`
 --
-ALTER TABLE `nota_tarea`
+ALTER TABLE `tarea_notas`
   ADD KEY `nota` (`id_nota_id`),
   ADD KEY `tarea` (`tarea_id`);
 
 --
--- Indices de la tabla `nota_proyecto`
+-- Indices de la tabla `proyecto_notas`
 --
-ALTER TABLE `nota_proyecto`
+ALTER TABLE `proyecto_notas`
   ADD KEY `nota` (`id_nota_id`),
   ADD KEY `proyecto` (`proyecto_id`);
 
@@ -280,16 +282,16 @@ ALTER TABLE `usuario_tarea`
   ADD CONSTRAINT `UsuarioTarea_fk2` FOREIGN KEY (`tarea_id`) REFERENCES `tarea` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `nota_tarea`
+-- Filtros para la tabla `tarea_notas`
 --
-ALTER TABLE `nota_tarea`
+ALTER TABLE `tarea_notas`
   ADD CONSTRAINT `NotaTarea_fk1` FOREIGN KEY (`id_nota_id`) REFERENCES `nota` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `NotaTarea_fk2` FOREIGN KEY (`tarea_id`) REFERENCES `tarea` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
       
 --
--- Filtros para la tabla `nota_proyecto`
+-- Filtros para la tabla `proyecto_notas`
 --
-ALTER TABLE `nota_proyecto`
+ALTER TABLE `proyecto_notas`
   ADD CONSTRAINT `NotaProyecto_fk1` FOREIGN KEY (`id_nota_id`) REFERENCES `nota` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `NotaProyecto_fk2` FOREIGN KEY (`proyecto_id`) REFERENCES `proyecto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
       
