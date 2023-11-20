@@ -2,7 +2,6 @@ package com.gettasksdone.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +22,7 @@ public class Usuario {
     private String email;
     @Column(nullable = false)
     private String password;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "usuario_tarea",
         joinColumns=
             @JoinColumn(name="id_usuario_id", referencedColumnName="id"),
@@ -31,7 +30,7 @@ public class Usuario {
             @JoinColumn(name="tarea_id", referencedColumnName="id")
     )
     private List<Tarea> tareas = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "UsuarioProyecto",
         joinColumns=
             @JoinColumn(name="id_usuario_id", referencedColumnName="id"),

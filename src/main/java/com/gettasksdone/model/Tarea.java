@@ -37,7 +37,7 @@ public class Tarea {
     private String estado;
     @Column(nullable = false)
     private int prioridad;
-    @OneToMany @JoinColumn(name ="tarea_id")
+    @OneToMany
     private List<CheckItem> checkItems = new ArrayList<>();
     @OneToMany
     private List<Nota> notas = new ArrayList<>();
