@@ -48,7 +48,7 @@ public class Tarea {
         inverseJoinColumns=
             @JoinColumn(name="id_etiqueta_id", referencedColumnName="id")
     )
-    private List<Nota> etiquetas = new ArrayList<>();
+    private List<Etiqueta> etiquetas = new ArrayList<>();
     @ManyToMany
     @JoinTable(name = "usuario_tarea",
         joinColumns=

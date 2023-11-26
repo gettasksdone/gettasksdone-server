@@ -72,7 +72,12 @@ public class NoteController {
 
     @PatchMapping("/update/{id}")
     public Nota updateNote(@PathVariable("id") Long id, @RequestBody Nota note){
-        return notaRepo.save(note);
+        Optional<Nota> nota = notaRepo.findById(id);
+        if(nota.isEmpty()){
+            return null;
+        }
+        nota.get().setContenido(note.getContenido());
+        return notaRepo.save(nota.get());
     }
 
     @DeleteMapping("/delete/{id}")

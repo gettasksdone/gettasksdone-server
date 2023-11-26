@@ -54,7 +54,13 @@ public class CheckItemController {
 
     @PatchMapping("/update/{id}")
     public CheckItem updateCheck(@RequestBody CheckItem check, @PathVariable("id") Long id){
-        return checkRepo.save(check);
+        Optional<CheckItem> checkItem = checkRepo.findById(id);
+        if(checkItem.isEmpty()){
+            return null;
+        }
+        checkItem.get().setContenido(check.getContenido());
+        checkItem.get().setEsta_marcado(check.isEsta_marcado());
+        return checkRepo.save(checkItem.get());
     }
 
     @DeleteMapping("/delete/{id}")

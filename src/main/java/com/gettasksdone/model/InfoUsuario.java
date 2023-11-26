@@ -15,7 +15,7 @@ public class InfoUsuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
-    private Usuario idUsuario;
+    private Usuario usuario;
     @Column(nullable = false)
     private String nombre;
     @Column(nullable = false)

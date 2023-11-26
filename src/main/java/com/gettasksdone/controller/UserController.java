@@ -28,6 +28,7 @@ public class UserController {
 
     @PostMapping("/create")
 	public Usuario createUser(@RequestBody Usuario usuario) {
+        usuario.setRol(Usuario.Rol.USUARIO);
 		return usuarioRepo.save(usuario);
 	}
 
@@ -38,7 +39,13 @@ public class UserController {
 
     @PatchMapping("/update/{id}")
     public Usuario updateUser(@PathVariable("id") Long id, @RequestBody Usuario usuario){
-        return usuarioRepo.save(usuario);
+        Optional<Usuario> user = usuarioRepo.findById(id);
+        if(user.isEmpty()){
+            return null;
+        }
+        user.get().setEmail(usuario.getEmail());
+        user.get().setPassword(usuario.getPassword());
+        return usuarioRepo.save(user.get());
     }
 
     @DeleteMapping("/delete/{id}")

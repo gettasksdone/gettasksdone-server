@@ -7,6 +7,7 @@
 CREATE TABLE usuario(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     email TEXT NOT NULL,
+    rol int NOT NULL
     password VARCHAR(255) NOT NULL COMMENT 'SHA'
 );
 
@@ -18,7 +19,7 @@ CREATE TABLE usuario(
 
 CREATE TABLE info_usuario(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    id_usuario_id int NOT NULL,
+    usuario_id int NOT NULL,
     nombre TEXT NOT NULL,
     telefono int NOT NULL,
     puesto TEXT NOT NULL,
@@ -201,7 +202,7 @@ ALTER TABLE `tarea_check_items`
 -- Indices de la tabla `info_usuario`
 --
 ALTER TABLE `info_usuario`
-  ADD KEY `usuario` (`id_usuario_id`);
+  ADD KEY `usuario` (`usuario_id`);
 
 --
 -- Indices de la tabla `usuario_proyecto`
@@ -270,7 +271,7 @@ ALTER TABLE `tarea_check_items`
 -- Filtros para la tabla `info_usuario`
 --
 ALTER TABLE `info_usuario`
-  ADD CONSTRAINT `InfoUsuario_fk1` FOREIGN KEY (`id_usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `InfoUsuario_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
   
 --
 -- Filtros para la tabla `usuario_proyecto`

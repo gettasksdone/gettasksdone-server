@@ -36,16 +36,29 @@ public class UserInfoController {
 
     @PostMapping("/create")
 	public InfoUsuario createUserData(@RequestBody InfoUsuario userData) {
-        Optional<Usuario> user = usuarioRepo.findById(userData.getIdUsuario().getId());
-        userData.setIdUsuario(user.get());
+        Optional<Usuario> user = usuarioRepo.findById(userData.getUsuario().getId());
+        if(user.isEmpty()){
+            return null;
+        }
+        Optional<InfoUsuario> infoUsuario = infoUsuarioRepo.findByUsuario(user.get());
+        if(infoUsuario.isPresent()){
+            return null;
+        }
+        userData.setUsuario(user.get());
 		return infoUsuarioRepo.save(userData);
 	}
 
     @PatchMapping("/update/{id}")
 	public InfoUsuario updateUserData(@PathVariable("id") Long id ,@RequestBody InfoUsuario userData) {
-        Optional<Usuario> user = usuarioRepo.findById(userData.getIdUsuario().getId());
-        userData.setIdUsuario(user.get());
-		return infoUsuarioRepo.save(userData);
+        Optional<InfoUsuario> userInfo = infoUsuarioRepo.findById(id);
+        if(userInfo.isEmpty()){
+            return null;
+        }
+        userInfo.get().setNombre(userData.getNombre());
+        userInfo.get().setTelefono(userData.getTelefono());
+        userInfo.get().setPuesto(userData.getPuesto());
+        userInfo.get().setDepartamento(userData.getDepartamento());
+		return infoUsuarioRepo.save(userInfo.get());
 	}
 
     @DeleteMapping("/delete/{id}")
