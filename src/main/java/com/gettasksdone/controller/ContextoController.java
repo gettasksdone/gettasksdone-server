@@ -37,8 +37,13 @@ public class ContextoController {
 	}
 
     @PatchMapping("/update/{id}")
-	public Contexto updateContext(@PathVariable int id ,@RequestBody Contexto contexto) {
-		return contextoRepo.save(contexto);
+	public Contexto updateContext(@PathVariable("id") Long id ,@RequestBody Contexto contexto) {
+        Optional<Contexto> context = contextoRepo.findById(id);
+        if(context.isEmpty()){
+            return null;
+        }
+        context.get().setNombre(contexto.getNombre());
+		return contextoRepo.save(context.get());
 	}
 
     @DeleteMapping("/delete/{id}")

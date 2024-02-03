@@ -37,8 +37,13 @@ public class EtiquetaController {
 	}
 
     @PatchMapping("/update/{id}")
-	public Etiqueta updateTag(@PathVariable int id ,@RequestBody Etiqueta etiqueta) {
-		return etiquetaRepo.save(etiqueta);
+	public Etiqueta updateTag(@PathVariable("id") Long id ,@RequestBody Etiqueta etiqueta) {
+        Optional<Etiqueta> tag = etiquetaRepo.findById(id);
+        if(tag.isEmpty()){
+            return null;
+        }
+        tag.get().setNombre(etiqueta.getNombre());
+		return etiquetaRepo.save(tag.get());
 	}
 
     @DeleteMapping("/delete/{id}")
