@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Entity
@@ -33,6 +34,8 @@ public class Proyecto {
     private String descripcion;
     @Column(nullable = false)
     private String estado;
+    @OneToOne
+    private Usuario usuario;
     @OneToMany
     private List<Tarea> tareas = new ArrayList<>();
     @OneToMany
@@ -45,12 +48,4 @@ public class Proyecto {
             @JoinColumn(name="id_etiqueta_id", referencedColumnName="id")
     )
     private List<Etiqueta> etiquetas = new ArrayList<>();
-    @ManyToMany
-    @JoinTable(name = "UsuarioProyecto",
-        joinColumns=
-            @JoinColumn(name="proyecto_id", referencedColumnName="id"),
-        inverseJoinColumns=
-            @JoinColumn(name="id_usuario_id", referencedColumnName="id")
-    )
-    private List<Usuario> usuarios = new ArrayList<>();
 }

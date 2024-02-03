@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import com.gettasksdone.model.Proyecto;
-import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.model.Usuario;
+import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.repository.ProyectoRepository;
 import com.gettasksdone.repository.UsuarioRepository;
 import com.gettasksdone.repository.EtiquetaRepository;
@@ -42,7 +42,13 @@ public class ProjectController {
 
     @PostMapping("/create")
     public Proyecto createProject(@RequestBody Proyecto project){
-        return proyectoRepo.save(project);
+        Optional<Usuario> user = usuarioRepo.findById(project.getUsuario().getId());
+        if(user.isEmpty()){
+            return null;
+        }else{
+            project.setUsuario(user.get());
+            return proyectoRepo.save(project);
+        }
     }
     
     @PatchMapping("/update/{id}")
@@ -109,43 +115,5 @@ public class ProjectController {
                 return proyectoRepo.save(project.get());
             }
         }
-    }
-
-    @PatchMapping("/addUser/{id}")
-    public Proyecto addUserToProject(@RequestParam("UserID") Long userId, @PathVariable("id") Long id){
-        Optional<Proyecto> project = proyectoRepo.findById(id);
-        if(project.isEmpty()){
-            return null;
-        }
-        Optional<Usuario> user = usuarioRepo.findById(userId);
-        if(user.isEmpty()){
-            return null;
-        }
-        List<Usuario> userList = project.get().getUsuarios();
-        if(userList.contains(user.get())){
-            return null;
-        }
-        userList.add(user.get());
-        project.get().setUsuarios(userList);
-        return proyectoRepo.save(project.get());
-    }
-
-    @PatchMapping("/removeUser/{id}")
-    public Proyecto delUserFromProject(@RequestParam("UserID") Long userId, @PathVariable("id") Long id){
-        Optional<Proyecto> project = proyectoRepo.findById(id);
-        if(project.isEmpty()){
-            return null;
-        }
-        Optional<Usuario> user = usuarioRepo.findById(userId);
-        if(user.isEmpty()){
-            return null;
-        }
-        List<Usuario> userList = project.get().getUsuarios();
-        if(!userList.contains(user.get())){
-            return null;
-        }
-        userList.remove(user.get());
-        project.get().setUsuarios(userList);
-        return proyectoRepo.save(project.get());
     }
 }

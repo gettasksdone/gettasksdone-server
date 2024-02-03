@@ -7,7 +7,7 @@
 CREATE TABLE usuario(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     email TEXT NOT NULL,
-    rol int NOT NULL
+    rol int NOT NULL,
     password VARCHAR(255) NOT NULL COMMENT 'SHA'
 );
 
@@ -84,18 +84,8 @@ CREATE TABLE proyecto(
     inicio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fin DATETIME NOT NULL,
     descripcion TEXT NOT NULL,
-    estado TEXT NOT NULL
-);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `usuario_proyecto`
---
-
-CREATE TABLE usuario_proyecto(  
-    id_usuario_id int NOT NULL,
-    proyecto_id int NOT NULL
+    estado TEXT NOT NULL,
+    usuario_id int NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -111,18 +101,8 @@ CREATE TABLE tarea(
     creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     vencimiento DATETIME,
     estado TEXT NOT NULL,
-    prioridad int NOT NULL
-);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `usuario_tarea`
---
-
-CREATE TABLE usuario_tarea(  
-    id_usuario_id int NOT NULL,
-    tarea_id int NOT NULL
+    prioridad int NOT NULL,
+    usuario_id int NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -205,24 +185,10 @@ ALTER TABLE `info_usuario`
   ADD KEY `usuario` (`usuario_id`);
 
 --
--- Indices de la tabla `usuario_proyecto`
---
-ALTER TABLE `usuario_proyecto`
-  ADD KEY `usuario` (`id_usuario_id`),
-  ADD KEY `proyecto` (`proyecto_id`);
-
---
 -- Indices de la tabla `tarea`
 --
 ALTER TABLE `tarea`
   ADD KEY `contexto` (`contexto_id`);
-
---
--- Indices de la tabla `usuario_tarea`
---
-ALTER TABLE `usuario_tarea`
-  ADD KEY `usuario` (`id_usuario_id`),
-  ADD KEY `tarea` (`tarea_id`);
 
 --
 -- Indices de la tabla `tarea_notas`
@@ -272,26 +238,12 @@ ALTER TABLE `tarea_check_items`
 --
 ALTER TABLE `info_usuario`
   ADD CONSTRAINT `InfoUsuario_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-  
---
--- Filtros para la tabla `usuario_proyecto`
---
-ALTER TABLE `usuario_proyecto`
-  ADD CONSTRAINT `UsuarioProyecto_fk1` FOREIGN KEY (`id_usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `UsuarioProyecto_fk2` FOREIGN KEY (`proyecto_id`) REFERENCES `proyecto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-  
+ 
 --
 -- Filtros para la tabla `tarea`
 --
 ALTER TABLE `tarea`
   ADD CONSTRAINT `Tarea_fk2` FOREIGN KEY (`contexto_id`) REFERENCES `contexto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-  
---
--- Filtros para la tabla `usuario_tarea`
---
-ALTER TABLE `usuario_tarea`
-  ADD CONSTRAINT `UsuarioTarea_fk1` FOREIGN KEY (`id_usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `UsuarioTarea_fk2` FOREIGN KEY (`tarea_id`) REFERENCES `tarea` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `tarea_notas`

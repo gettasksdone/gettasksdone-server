@@ -19,9 +19,9 @@ import com.gettasksdone.model.Contexto;
 import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.repository.ProyectoRepository;
 import com.gettasksdone.repository.TareaRepository;
+import com.gettasksdone.repository.UsuarioRepository;
 import com.gettasksdone.repository.ContextoRepository;
 import com.gettasksdone.repository.EtiquetaRepository;
-import com.gettasksdone.repository.UsuarioRepository;
 
 
 @RestController
@@ -56,11 +56,13 @@ public class TasksController {
         if(project.isEmpty()){
             return null;
         }else{
+            Optional<Usuario> user = usuarioRepo.findById(project.get().getUsuario().getId());
             Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
             if(context.isEmpty()){
                 return null;
             }else{
                 task.setContexto(context.get());
+                task.setUsuario(user.get());
                 tarea = tareaRepo.save(task);
                 projectTasks = project.get().getTareas();
                 projectTasks.add(tarea);
@@ -137,43 +139,5 @@ public class TasksController {
                 return tareaRepo.save(task.get());
             }
         }
-    }
-
-    @PatchMapping("/addUser/{id}")
-    public Tarea addUserToTask(@RequestParam("UserID") Long userId, @PathVariable("id") Long id){
-        Optional<Tarea> task = tareaRepo.findById(id);
-        if(task.isEmpty()){
-            return null;
-        }
-        Optional<Usuario> user = usuarioRepo.findById(userId);
-        if(user.isEmpty()){
-            return null;
-        }
-        List<Usuario> userList = task.get().getUsuarios();
-        if(userList.contains(user.get())){
-            return null;
-        }
-        userList.add(user.get());
-        task.get().setUsuarios(userList);
-        return tareaRepo.save(task.get());
-    }
-
-    @PatchMapping("/removeUser/{id}")
-    public Tarea delUserFromTask(@RequestParam("UserID") Long userId, @PathVariable("id") Long id){
-        Optional<Tarea> task = tareaRepo.findById(id);
-        if(task.isEmpty()){
-            return null;
-        }
-        Optional<Usuario> user = usuarioRepo.findById(userId);
-        if(user.isEmpty()){
-            return null;
-        }
-        List<Usuario> userList = task.get().getUsuarios();
-        if(!userList.contains(user.get())){
-            return null;
-        }
-        userList.remove(user.get());
-        task.get().setUsuarios(userList);
-        return tareaRepo.save(task.get());
     }
 }
