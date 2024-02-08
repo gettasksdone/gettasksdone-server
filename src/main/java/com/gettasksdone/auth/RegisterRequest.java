@@ -1,4 +1,4 @@
-package com.gettasksdone.model;
+package com.gettasksdone.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+@AllArgsConstructor
+public class RegisterRequest {
     String username;
     String password;
+    String email;
 }

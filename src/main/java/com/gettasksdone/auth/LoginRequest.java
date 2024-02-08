@@ -1,4 +1,4 @@
-package com.gettasksdone.model;
+package com.gettasksdone.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ResponseEntity {
-    String token;
+@NoArgsConstructor
+public class LoginRequest {
+    String username;
+    String password;
 }

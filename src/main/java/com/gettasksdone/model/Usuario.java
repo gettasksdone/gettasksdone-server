@@ -14,14 +14,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario implements UserDetails{
+public class Usuario implements UserDetails {
     public enum Rol{USUARIO, ADMINISTRADOR};
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,18 +37,17 @@ public class Usuario implements UserDetails{
     private String password;
     @Column(nullable = false)
     private Rol rol;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-      return List.of(new SimpleGrantedAuthority((rol.name())));
+        return List.of(new SimpleGrantedAuthority((rol.name())));
     }
     @Override
     public boolean isAccountNonExpired() {
-       return true;
+        return true;
     }
     @Override
     public boolean isAccountNonLocked() {
-       return true;
+        return true;
     }
     @Override
     public boolean isCredentialsNonExpired() {

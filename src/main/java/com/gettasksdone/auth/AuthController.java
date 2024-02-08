@@ -1,10 +1,8 @@
-package com.gettasksdone.controller;
+package com.gettasksdone.auth;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gettasksdone.model.LoginRequest;
-import com.gettasksdone.model.RegisterRequest;
-
+import io.micrometer.core.ipc.http.HttpSender.Response;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,21 +21,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private final AuthService authService;
 
     @PostMapping(value = "/login", consumes = "application/json")
-    public String login(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
 
-        logger.info("HOLA DESDE EL LOGIN");
+        return ResponseEntity.ok(authService.login(request));
 
-        return "Login";
     }
 
     @PostMapping(value = "/register", consumes = "application/json")
-    public String register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
 
-        logger.info("HOLA DESDE EL REGISTER");
+        return ResponseEntity.ok(authService.register(request));
 
-        return "Register";
     }
 }
