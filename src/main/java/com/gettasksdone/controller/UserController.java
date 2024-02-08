@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.UsuarioRepository;
 
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
