@@ -3,6 +3,8 @@ package com.gettasksdone.controller;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,37 +24,42 @@ public class ContextoController {
     private ContextoRepository contextoRepo;
 
     @GetMapping("/getContexts")
-	public List<Contexto> allContexts(){
-		return contextoRepo.findAll();
+	public ResponseEntity<List<Contexto>> allContexts(){
+		return new ResponseEntity<>(contextoRepo.findAll(), HttpStatus.OK);
 	}
 
     @GetMapping("/{id}")
-	public Optional<Contexto> findById(@PathVariable("id") Long id){
-        return contextoRepo.findById(id);
+	public ResponseEntity<?> findById(@PathVariable("id") Long id){
+        Optional<Contexto> context = contextoRepo.findById(id);
+        if(context.isEmpty()){
+            return new ResponseEntity<>("Context not found.", HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(context.get(), HttpStatus.OK);
+        }
 	}
 
     @PostMapping("/createContext")
-	public Contexto createContext(@RequestBody Contexto contexto) {
-		return contextoRepo.save(contexto);
+	public ResponseEntity<Contexto> createContext(@RequestBody Contexto contexto) {
+		return new ResponseEntity<>(contextoRepo.save(contexto), HttpStatus.OK);
 	}
 
     @PatchMapping("/update/{id}")
-	public Contexto updateContext(@PathVariable("id") Long id ,@RequestBody Contexto contexto) {
+	public ResponseEntity<?> updateContext(@PathVariable("id") Long id ,@RequestBody Contexto contexto) {
         Optional<Contexto> context = contextoRepo.findById(id);
         if(context.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
         }
         context.get().setNombre(contexto.getNombre());
-		return contextoRepo.save(context.get());
+		return new ResponseEntity<>(contextoRepo.save(context.get()), HttpStatus.OK);
 	}
 
     @DeleteMapping("/delete/{id}")
-	public String deleteContext(@PathVariable("id") Long id) {
+	public ResponseEntity<String> deleteContext(@PathVariable("id") Long id) {
         if(contextoRepo.findById(id).isEmpty()){
-            return "Context not found";
+            return new ResponseEntity<>("Context not found", HttpStatus.NOT_FOUND);
         }else{
             contextoRepo.deleteById(id);
-            return "Context deleted";
+            return new ResponseEntity<>("Context deleted", HttpStatus.OK);
         }
 	}
 }

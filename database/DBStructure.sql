@@ -5,8 +5,9 @@
 --
 
 CREATE TABLE usuario(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    email TEXT NOT NULL,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
     rol int NOT NULL,
     password VARCHAR(255) NOT NULL COMMENT 'SHA'
 );
@@ -18,8 +19,8 @@ CREATE TABLE usuario(
 --
 
 CREATE TABLE info_usuario(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    usuario_id int NOT NULL,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    usuario_id bigint NOT NULL,
     nombre TEXT NOT NULL,
     telefono int NOT NULL,
     puesto TEXT NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE info_usuario(
 --
 
 CREATE TABLE contexto(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nombre TEXT NOT NULL
 );
 
@@ -44,7 +45,7 @@ CREATE TABLE contexto(
 --
 
 CREATE TABLE etiqueta(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nombre TEXT NOT NULL
 );
 
@@ -55,7 +56,7 @@ CREATE TABLE etiqueta(
 --
 
 CREATE TABLE nota(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contenido TEXT NOT NULL,
     creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -67,7 +68,7 @@ CREATE TABLE nota(
 --
 
 CREATE TABLE check_item(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contenido TEXT NOT NULL,
     esta_marcado BOOL NOT NULL DEFAULT 0
 );
@@ -79,13 +80,13 @@ CREATE TABLE check_item(
 --
 
 CREATE TABLE proyecto(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nombre TEXT NOT NULL,
     inicio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fin DATETIME NOT NULL,
     descripcion TEXT NOT NULL,
     estado TEXT NOT NULL,
-    usuario_id int NOT NULL
+    usuario_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -95,14 +96,14 @@ CREATE TABLE proyecto(
 --
 
 CREATE TABLE tarea(  
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    contexto_id int NOT NULL,
+    id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    contexto_id bigint NOT NULL,
     descripcion TEXT NOT NULL,
     creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     vencimiento DATETIME,
     estado TEXT NOT NULL,
     prioridad int NOT NULL,
-    usuario_id int NOT NULL
+    usuario_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -112,8 +113,8 @@ CREATE TABLE tarea(
 --
 
 CREATE TABLE tarea_notas(  
-    notas_id int NOT NULL,
-    tarea_id int NOT NULL
+    notas_id bigint NOT NULL,
+    tarea_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -123,8 +124,8 @@ CREATE TABLE tarea_notas(
 --
 
 CREATE TABLE proyecto_notas(  
-    notas_id int NOT NULL,
-    proyecto_id int NOT NULL
+    notas_id bigint NOT NULL,
+    proyecto_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -134,8 +135,8 @@ CREATE TABLE proyecto_notas(
 --
 
 CREATE TABLE etiqueta_tarea(  
-    id_etiqueta_id int NOT NULL,
-    tarea_id int NOT NULL
+    id_etiqueta_id bigint NOT NULL,
+    tarea_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -145,8 +146,8 @@ CREATE TABLE etiqueta_tarea(
 --
 
 CREATE TABLE proyecto_tareas(  
-    proyecto_id int NOT NULL,
-    tareas_id int NOT NULL
+    proyecto_id bigint NOT NULL,
+    tareas_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -156,8 +157,8 @@ CREATE TABLE proyecto_tareas(
 --
 
 CREATE TABLE etiqueta_proyecto(  
-    id_etiqueta_id int NOT NULL,
-    proyecto_id int NOT NULL
+    id_etiqueta_id bigint NOT NULL,
+    proyecto_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -167,9 +168,12 @@ CREATE TABLE etiqueta_proyecto(
 --
 
 CREATE TABLE tarea_check_items(  
-    check_items_id int NOT NULL,
-    tarea_id int NOT NULL
+    check_items_id bigint NOT NULL,
+    tarea_id bigint NOT NULL
 );
+
+ALTER TABLE `usuario`
+  ADD UNIQUE (username, email);
 
 --
 -- Indices de la tabla `tarea_check_items`

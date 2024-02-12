@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,27 +41,32 @@ public class TasksController {
     private UsuarioRepository usuarioRepo;
     
     @GetMapping("/getTasks")
-	public List<Tarea> allTasks(){
-		return tareaRepo.findAll();
+	public ResponseEntity<List<Tarea>> allTasks(){
+		return new ResponseEntity<>(tareaRepo.findAll(), HttpStatus.OK);
 	}
 
     @GetMapping("/{id}")
-    public Optional<Tarea> findById(@PathVariable("id") Long id){
-        return tareaRepo.findById(id);
+    public ResponseEntity<?> findById(@PathVariable("id") Long id){
+        Optional<Tarea> task = tareaRepo.findById(id);
+        if(task.isEmpty()){
+            return new ResponseEntity<>("Task not found.", HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(task.get(), HttpStatus.OK);
+        }
     }
 
     @PostMapping("/create")
-    public Tarea createTask(@RequestBody Tarea task, @RequestParam("ProjectID") long projectID){
+    public ResponseEntity<?> createTask(@RequestBody Tarea task, @RequestParam("ProjectID") long projectID){
         Optional<Proyecto> project = proyectoRepo.findById(projectID);
         Tarea tarea;
         List<Tarea> projectTasks;
         if(project.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
         }else{
             Optional<Usuario> user = usuarioRepo.findById(project.get().getUsuario().getId());
             Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
             if(context.isEmpty()){
-                return null;
+                return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
             }else{
                 task.setContexto(context.get());
                 task.setUsuario(user.get());
@@ -68,75 +75,78 @@ public class TasksController {
                 projectTasks.add(tarea);
                 project.get().setTareas(projectTasks);
                 proyectoRepo.save(project.get());
-                return tarea;
+                return new ResponseEntity<>(tarea, HttpStatus.OK);
             }
         }
     }
 
     @PatchMapping("/update/{id}")
-    public Tarea updateTask(@RequestBody Tarea task, @PathVariable("id") Long id){
+    public ResponseEntity<?> updateTask(@RequestBody Tarea task, @PathVariable("id") Long id){
         Optional<Tarea> tarea = tareaRepo.findById(id);
         Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
-        if(tarea.isEmpty() || context.isEmpty()){
-            return null;
+        if(tarea.isEmpty()){
+            return new ResponseEntity<>("Task not found", HttpStatus.BAD_REQUEST);
+        }
+        if(context.isEmpty()){
+            return new ResponseEntity<>("Context not found", HttpStatus.BAD_REQUEST);
         }
         tarea.get().setDescripcion(task.getDescripcion());
         tarea.get().setVencimiento(task.getVencimiento());
         tarea.get().setEstado(task.getEstado());
         tarea.get().setPrioridad(task.getPrioridad());
         tarea.get().setContexto(context.get());
-        return tareaRepo.save(tarea.get());
+        return new ResponseEntity<>(tareaRepo.save(tarea.get()), HttpStatus.OK);
         
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deleteTask(@PathVariable("id") Long id){
+    public ResponseEntity<String> deleteTask(@PathVariable("id") Long id){
         if(tareaRepo.findById(id).isEmpty()){
-            return "Task not found";
+            return new ResponseEntity<>("Task not found", HttpStatus.NOT_FOUND);
         }else{
             tareaRepo.deleteById(id);
-            return "Task deleted";
+            return new ResponseEntity<>("Task deleted", HttpStatus.OK);
         }
     }
 
     @PatchMapping("/addTag/{id}")
-    public Tarea addTagToTask(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
+    public ResponseEntity<?> addTagToTask(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
         Optional<Tarea> task = tareaRepo.findById(id);
         if(task.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
         }else{
             Optional<Etiqueta> tag = etiquetaRepo.findById(tagId);
             if(tag.isEmpty()){
-                return null;
+                return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
             }else{
                 List<Etiqueta> tagList = task.get().getEtiquetas();
                 if(tagList.contains(tag.get())){
-                    return null;
+                    return new ResponseEntity<>("Tag already on this task.", HttpStatus.BAD_REQUEST);
                 }
                 tagList.add(tag.get());
                 task.get().setEtiquetas(tagList);
-                return tareaRepo.save(task.get());
+                return new ResponseEntity<>(tareaRepo.save(task.get()), HttpStatus.OK);
             }
         }
     }
 
     @PatchMapping("/removeTag/{id}")
-    public Tarea delTagFromTask(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
+    public ResponseEntity<?> delTagFromTask(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
         Optional<Tarea> task = tareaRepo.findById(id);
         if(task.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
         }else{
             Optional<Etiqueta> tag = etiquetaRepo.findById(tagId);
             if(tag.isEmpty()){
-                return null;
+                return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
             }else{
                 List<Etiqueta> tagList = task.get().getEtiquetas();
                 if(!tagList.contains(tag.get())){
-                    return null;
+                    return new ResponseEntity<>("Tag not present on this task.", HttpStatus.BAD_REQUEST);
                 }
                 tagList.remove(tag.get());
                 task.get().setEtiquetas(tagList);
-                return tareaRepo.save(task.get());
+                return new ResponseEntity<>(tareaRepo.save(task.get()), HttpStatus.OK);
             }
         }
     }

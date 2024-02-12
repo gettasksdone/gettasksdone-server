@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,88 +33,93 @@ public class ProjectController {
     private UsuarioRepository usuarioRepo;
 
     @GetMapping("/getProjects")
-	public List<Proyecto> allProjects(){
-		return proyectoRepo.findAll();
+	public ResponseEntity<List<Proyecto>> allProjects(){
+		return new ResponseEntity<>(proyectoRepo.findAll(), HttpStatus.OK);
 	}
 
     @GetMapping("/{id}")
-    public Optional<Proyecto> findById(@PathVariable("id") Long id){
-        return proyectoRepo.findById(id);
+    public ResponseEntity<?> findById(@PathVariable("id") Long id){
+        Optional<Proyecto> project = proyectoRepo.findById(id);
+        if(project.isEmpty()){
+            return new ResponseEntity<>("Project not found.", HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(project.get(), HttpStatus.OK);
+        }
     }
 
     @PostMapping("/create")
-    public Proyecto createProject(@RequestBody Proyecto project){
+    public ResponseEntity<?> createProject(@RequestBody Proyecto project){
         Optional<Usuario> user = usuarioRepo.findById(project.getUsuario().getId());
         if(user.isEmpty()){
-            return null;
+            return new ResponseEntity<>("User not found.", HttpStatus.BAD_REQUEST);
         }else{
             project.setUsuario(user.get());
-            return proyectoRepo.save(project);
+            return new ResponseEntity<>(proyectoRepo.save(project), HttpStatus.OK);
         }
     }
     
     @PatchMapping("/update/{id}")
-    public Proyecto updateProject(@PathVariable("id") Long id, @RequestBody Proyecto project){
+    public ResponseEntity<?> updateProject(@PathVariable("id") Long id, @RequestBody Proyecto project){
         Optional<Proyecto> proyecto = proyectoRepo.findById(id);
         if(proyecto.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
         }
         proyecto.get().setNombre(project.getNombre());
         proyecto.get().setDescripcion(project.getDescripcion());
         proyecto.get().setEstado(project.getEstado());
         proyecto.get().setInicio(project.getInicio());
         proyecto.get().setFin(project.getFin());
-        return proyectoRepo.save(proyecto.get());
+        return new ResponseEntity<>(proyectoRepo.save(proyecto.get()), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deleteProject(@PathVariable("id") Long id){
+    public ResponseEntity<String> deleteProject(@PathVariable("id") Long id){
         if(proyectoRepo.findById(id).isEmpty()){
-            return "Project not found";
+            return new ResponseEntity<>("Project not found", HttpStatus.NOT_FOUND);
         }else{
             proyectoRepo.deleteById(id);
-            return "Project deleted";
+            return new ResponseEntity<>("Project deleted", HttpStatus.OK);
         }
     }
 
     @PatchMapping("/addTag/{id}")
-    public Proyecto addTagToProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
+    public ResponseEntity<?> addTagToProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
         Optional<Proyecto> project = proyectoRepo.findById(id);
         if(project.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
         }else{
             Optional<Etiqueta> tag = etiquetaRepo.findById(tagId);
             if(tag.isEmpty()){
-                return null;
+                return new ResponseEntity<>("Tag not found", HttpStatus.BAD_REQUEST);
             }else{
                 List<Etiqueta> tagList = project.get().getEtiquetas();
                 if(tagList.contains(tag.get())){
-                    return null;
+                    return new ResponseEntity<>("Tag already on the project.", HttpStatus.BAD_REQUEST);
                 }
                 tagList.add(tag.get());
                 project.get().setEtiquetas(tagList);
-                return proyectoRepo.save(project.get());
+                return new ResponseEntity<>(proyectoRepo.save(project.get()), HttpStatus.OK);
             }
         }
     }
 
     @PatchMapping("/removeTag/{id}")
-    public Proyecto delTagFromProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
+    public ResponseEntity<?> delTagFromProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
         Optional<Proyecto> project = proyectoRepo.findById(id);
         if(project.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
         }else{
             Optional<Etiqueta> tag = etiquetaRepo.findById(tagId);
             if(tag.isEmpty()){
-                return null;
+                return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
             }else{
                 List<Etiqueta> tagList = project.get().getEtiquetas();
                 if(!tagList.contains(tag.get())){
-                    return null;
+                    return new ResponseEntity<>("Tag not present in the project.", HttpStatus.BAD_REQUEST);
                 }
                 tagList.remove(tag.get());
                 project.get().setEtiquetas(tagList);
-                return proyectoRepo.save(project.get());
+                return new ResponseEntity<>(proyectoRepo.save(project.get()), HttpStatus.OK);
             }
         }
     }

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,25 +32,30 @@ public class NoteController {
     private TareaRepository tareaRepo;
 
     @GetMapping("/getNotes")
-	public List<Nota> allNotes(){
-		return notaRepo.findAll();
+	public ResponseEntity<List<Nota>> allNotes(){
+		return new ResponseEntity<>(notaRepo.findAll(), HttpStatus.OK);
 	}
 
     @GetMapping("/{id}")
-    public Optional<Nota> findById(@PathVariable("id") Long id){
-        return notaRepo.findById(id);
+    public ResponseEntity<?> findById(@PathVariable("id") Long id){
+        Optional<Nota> note = notaRepo.findById(id);
+        if(note.isEmpty()){
+            return new ResponseEntity<>("Note not found.", HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(note.get(), HttpStatus.OK);
+        }
     }
 
     @PostMapping("/create")
-    public Nota createNote(@RequestParam("Target") String target, @RequestParam("ID") Long id, @RequestBody Nota note){
+    public ResponseEntity<?> createNote(@RequestParam("Target") String target, @RequestParam("ID") Long id, @RequestBody Nota note){
         Nota nota;
         List<Nota> notas;
-        nota = notaRepo.save(note);
         if(target.equals("Project")){
             Optional<Proyecto> project = proyectoRepo.findById(id);
             if(project.isEmpty()){
-                return null;
+                return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
             }else{
+                nota = notaRepo.save(note);
                 notas = project.get().getNotas();
                 notas.add(nota);
                 project.get().setNotas(notas);
@@ -57,36 +64,37 @@ public class NoteController {
         }else if(target.equals("Task")){
             Optional<Tarea> task = tareaRepo.findById(id);
             if(task.isEmpty()){
-                return null;
+                return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
             }else{
+                nota = notaRepo.save(note);
                 notas = task.get().getNotas();
                 notas.add(nota);
                 task.get().setNotas(notas);
                 tareaRepo.save(task.get());
             }
         }else{
-            return null;
+            return new ResponseEntity<>("Must assign the note to a task or a project.", HttpStatus.BAD_REQUEST);
         }
-        return nota;
+        return new ResponseEntity<>(nota, HttpStatus.OK);
     }
 
     @PatchMapping("/update/{id}")
-    public Nota updateNote(@PathVariable("id") Long id, @RequestBody Nota note){
+    public ResponseEntity<?> updateNote(@PathVariable("id") Long id, @RequestBody Nota note){
         Optional<Nota> nota = notaRepo.findById(id);
         if(nota.isEmpty()){
-            return null;
+            return new ResponseEntity<>("Note not found.", HttpStatus.BAD_REQUEST);
         }
         nota.get().setContenido(note.getContenido());
-        return notaRepo.save(nota.get());
+        return new ResponseEntity<>(notaRepo.save(nota.get()), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deleteNote(@PathVariable("id") Long id){
+    public ResponseEntity<String> deleteNote(@PathVariable("id") Long id){
         if(notaRepo.findById(id).isEmpty()){
-            return "Note not found";
+            return new ResponseEntity<>("Note not found", HttpStatus.NOT_FOUND);
         }else{
             notaRepo.deleteById(id);
-            return "Note deleted";
+            return new ResponseEntity<>("Note deleted", HttpStatus.OK);
         }
     }
 }
