@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,23 +19,35 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import com.gettasksdone.jwt.JwtService;
 import com.gettasksdone.model.Usuario;
+import com.gettasksdone.model.Usuario.Rol;
 import com.gettasksdone.repository.UsuarioRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
 	private UsuarioRepository usuarioRepo;
+    JwtService jwt = new JwtService();
 
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/users")
-	public ResponseEntity<List<Usuario>> allUsers(){
-        Logger logger = LoggerFactory.getLogger(UserController.class);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        logger.debug(username);
-		return new ResponseEntity<>(usuarioRepo.findAll(), HttpStatus.OK);
+	public ResponseEntity<?> allUsers(HttpServletRequest request){
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        token = token.substring(7);
+        String authedUsername = jwt.getUsernameFromToken(token);
+        Optional<Usuario> authedUser = usuarioRepo.findByUsername(authedUsername);
+        if(authedUser.isEmpty()){
+            return new ResponseEntity<>("Username does not exist.", HttpStatus.FORBIDDEN);
+        }else{
+            if(authedUser.get().getRol() == Rol.ADMINISTRADOR){
+                return new ResponseEntity<>(usuarioRepo.findAll(), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("User not authorized.", HttpStatus.FORBIDDEN);
+            }
+        }
 	}
 
     @GetMapping("/{id}")
