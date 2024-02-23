@@ -43,6 +43,9 @@ while true; do
             echo "Has seleccionado Modo Actualización (frontend)."
             if confirmacion; then
                 echo "Actualizando y desplegando el frontend..."
+
+                #las modificaciones que existan en la base de datos quedan
+                # reflejadas en los volumunes creados con docker  (tener en cuenta)
                 docker-compose -f $DOCKER_COMPOSE_FILE_FRONTED stop
                 docker-compose -f $DOCKER_COMPOSE_FILE_FRONTED pull
                 docker-compose -f $DOCKER_COMPOSE_FILE_FRONTED up -d
@@ -56,6 +59,7 @@ while true; do
             echo "Has seleccionado Lanzar en el servidor."
             if confirmacion; then
                 echo "Desplegando desde cero el proyecto en el servidor..."
+                docker-compose -f $DOCKER_COMPOSE_FILE_FRONTED down -v
                 docker-compose -f $DOCKER_COMPOSE_FILE_FRONTED up --build
             else
                 echo "Operación cancelada."
@@ -66,6 +70,7 @@ while true; do
             echo "Has seleccionado Modo Desarrollador Backend."
             if confirmacion; then
                 echo "Desplegando proyecto para desarrollo backend..."
+                docker-compose -f $DOCKER_COMPOSE_FILE_FRONTED down -v
                 docker-compose -f $DOCKER_COMPOSE_DEVELOP up --build
             else
                 echo "Operación cancelada."
