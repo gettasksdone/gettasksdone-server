@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan({"com.gettasksdone.controller", "com.gettasksdone.configuration", "com.gettasksdone.auth", "com.gettasksdone.jwt"})
+@ComponentScan({"com.gettasksdone.controller", "com.gettasksdone.configuration", "com.gettasksdone.auth", "com.gettasksdone.jwt", "com.gettasksdone.service"})
 @EntityScan("com.gettasksdone.model")
 @EnableJpaRepositories("com.gettasksdone.repository")
 public class ServerApplication {

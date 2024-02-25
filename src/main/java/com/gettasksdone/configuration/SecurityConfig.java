@@ -3,6 +3,7 @@ package com.gettasksdone.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +17,20 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+
+//Habilitamos si podemos o no llegar a un endpoint
+@EnableMethodSecurity(
+    securedEnabled = true,
+    jsr250Enabled = true,
+    prePostEnabled = true
+)
+
+/**
+ * 
+ *   prePostEnabled = true: Habilita @PreAuthorize y @PostAuthorize.
+     securedEnabled = true: Habilita @Secured.
+     jsr250Enabled = true: Habilita @RolesAllowed.
+ */
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -32,7 +47,8 @@ public class SecurityConfig {
               authRequest
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/ping").permitAll()
-                .anyRequest().authenticated()
+                
+                .anyRequest().authenticated() //Necesitamos estar autenticados para poder ver los diferentes endpoint
                 )
             .sessionManagement(sessionManager -> 
                 sessionManager

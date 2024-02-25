@@ -6,8 +6,10 @@ import com.gettasksdone.model.Usuario;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
+    
     List<Usuario> findAll();
     Optional<Usuario> findById(Long id);
     Optional<Usuario> findByUsername(String username);
