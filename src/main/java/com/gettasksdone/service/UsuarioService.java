@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.stereotype.Service;
 
-import com.gettasksdone.repository.dto.UserDTO;
+import com.gettasksdone.dto.UserDTO;
 
 @Service
 public interface UsuarioService {

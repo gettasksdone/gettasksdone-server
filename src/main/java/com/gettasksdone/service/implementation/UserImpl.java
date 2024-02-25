@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.UserRoleAuthorizationInterceptor;
 
 import com.gettaskdone.utils.MHelpers;
+import com.gettasksdone.dto.UserDTO;
 import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.UsuarioRepository;
-import com.gettasksdone.repository.dto.UserDTO;
 import com.gettasksdone.service.UsuarioService;
 
 

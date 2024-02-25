@@ -1,4 +1,4 @@
-package com.gettasksdone.repository.dto;
+package com.gettasksdone.dto;
 
 import com.gettasksdone.model.Usuario.Rol;
 import lombok.Data;
