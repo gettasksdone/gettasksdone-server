@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,9 +18,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import com.gettasksdone.model.Nota;
 import com.gettasksdone.model.Proyecto;
 import com.gettasksdone.model.Tarea;
+import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.NotaRepository;
 import com.gettasksdone.repository.ProyectoRepository;
 import com.gettasksdone.repository.TareaRepository;
+import com.gettasksdone.repository.UsuarioRepository;
+import com.gettasksdone.service.NotaService;
+import com.gettasksdone.utils.MHelpers;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/note")
@@ -30,10 +37,15 @@ public class NoteController {
     private ProyectoRepository proyectoRepo;
     @Autowired
     private TareaRepository tareaRepo;
+    @Autowired
+    private UsuarioRepository usuarioRepo;
+    @Autowired
+    private NotaService notaService;
 
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @GetMapping("/getNotes")
-	public ResponseEntity<List<Nota>> allNotes(){
-		return new ResponseEntity<>(notaRepo.findAll(), HttpStatus.OK);
+	public ResponseEntity<?> allNotes(){
+		return new ResponseEntity<>(notaService.findAll(), HttpStatus.OK);
 	}
 
     @GetMapping("/{id}")
@@ -47,14 +59,20 @@ public class NoteController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createNote(@RequestParam("Target") String target, @RequestParam("ID") Long id, @RequestBody Nota note){
+    public ResponseEntity<?> createNote(@RequestParam("Target") String target, @RequestParam("ID") Long id, @RequestBody Nota note, HttpServletRequest request){
         Nota nota;
         List<Nota> notas;
+        Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+        Long ownerID;
         if(target.equals("Project")){
             Optional<Proyecto> project = proyectoRepo.findById(id);
             if(project.isEmpty()){
                 return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
             }else{
+                ownerID = project.get().getUsuario().getId();
+                if(!MHelpers.checkAccess(ownerID, authedUser)){
+                    return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
+                }
                 nota = notaRepo.save(note);
                 notas = project.get().getNotas();
                 notas.add(nota);
@@ -66,6 +84,10 @@ public class NoteController {
             if(task.isEmpty()){
                 return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
             }else{
+                ownerID = task.get().getUsuario().getId();
+                if(!MHelpers.checkAccess(ownerID, authedUser)){
+                    return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
+                }
                 nota = notaRepo.save(note);
                 notas = task.get().getNotas();
                 notas.add(nota);

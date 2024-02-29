@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.gettaskdone.utils.MHelpers;
+import org.springframework.stereotype.Component;
 import com.gettasksdone.dto.EtiquetaDTO;
 import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.repository.EtiquetaRepository;
 import com.gettasksdone.service.EtiquetaService;
+import com.gettasksdone.utils.MHelpers;
 
+@Component
 public class EtiquetaImpl implements EtiquetaService {
 
     @Autowired

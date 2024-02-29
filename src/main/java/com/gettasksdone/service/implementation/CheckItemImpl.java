@@ -3,14 +3,15 @@ package com.gettasksdone.service.implementation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import com.gettaskdone.utils.MHelpers;
+import org.springframework.stereotype.Component;
 import com.gettasksdone.dto.CheckItemDTO;
 import com.gettasksdone.model.CheckItem;
 import com.gettasksdone.repository.CheckItemRepository;
 import com.gettasksdone.service.CheckItemService;
+import com.gettasksdone.utils.MHelpers;
 
+@Component
 public class CheckItemImpl implements CheckItemService {
 
     @Autowired

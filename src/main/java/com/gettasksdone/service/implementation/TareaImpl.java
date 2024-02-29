@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.gettaskdone.utils.MHelpers;
+import org.springframework.stereotype.Component;
 import com.gettasksdone.dto.TareaDTO;
 import com.gettasksdone.model.Contexto;
 import com.gettasksdone.model.Tarea;
+import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.TareaRepository;
 import com.gettasksdone.service.TareaService;
+import com.gettasksdone.utils.MHelpers;
 
+@Component
 public class TareaImpl implements TareaService{
 
     @Autowired
@@ -92,4 +95,14 @@ public class TareaImpl implements TareaService{
         return tasksDTO;
     }
     
+    @Override
+    public List<TareaDTO> findByUsuario(Usuario usuario){
+        List<TareaDTO> tasksDTO = new ArrayList<>();
+        List<Tarea> tasks = this.tareaRepo.findByUsuario(usuario);
+        for(Tarea task: tasks){
+            TareaDTO taskDTO = MHelpers.modelMapper().map(task, TareaDTO.class);
+            tasksDTO.add(taskDTO);
+        }
+        return tasksDTO;
+    }
 }

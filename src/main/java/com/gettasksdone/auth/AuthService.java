@@ -84,4 +84,7 @@ public class AuthService {
         }
     }
 
+    public String encodePassword(String clearPassword){
+        return passwordEncoder.encode(clearPassword);
+    }
 }

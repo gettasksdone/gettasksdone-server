@@ -5,6 +5,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.gettasksdone.model.Contexto;
 import com.gettasksdone.model.Tarea;
+import com.gettasksdone.model.Usuario;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalDateTime;
@@ -18,4 +19,5 @@ public interface TareaRepository extends JpaRepository<Tarea, Long>{
     List<Tarea> findByVencimiento(@Param("vencimiento") LocalDateTime vencimiento);
     List<Tarea> findByContexto(@Param("contexto_id") Contexto contexto_id);
     List<Tarea> findByPrioridad(@Param("prioridad") int prioridad);
+    List<Tarea> findByUsuario(Usuario usuario);
 }

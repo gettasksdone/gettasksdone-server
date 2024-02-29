@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,9 @@ import com.gettasksdone.model.Usuario;
 import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.repository.ProyectoRepository;
 import com.gettasksdone.repository.UsuarioRepository;
+import com.gettasksdone.service.ProyectoService;
+import com.gettasksdone.utils.MHelpers;
+import jakarta.servlet.http.HttpServletRequest;
 import com.gettasksdone.repository.EtiquetaRepository;
 
 @RestController
@@ -31,59 +35,86 @@ public class ProjectController {
     private EtiquetaRepository etiquetaRepo;
     @Autowired
     private UsuarioRepository usuarioRepo;
+    @Autowired
+    private ProyectoService proyectoService;
 
+    @GetMapping("/")
+    public ResponseEntity<?> projectsFromUser(HttpServletRequest request) {
+        Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
+        return new ResponseEntity<>(proyectoService.findByUsuario(authedUser.get()), HttpStatus.OK);
+    }
+    
+
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @GetMapping("/getProjects")
-	public ResponseEntity<List<Proyecto>> allProjects(){
-		return new ResponseEntity<>(proyectoRepo.findAll(), HttpStatus.OK);
+	public ResponseEntity<?> allProjects(){
+		return new ResponseEntity<>(proyectoService.findAll(), HttpStatus.OK);
 	}
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") Long id){
+    public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){
         Optional<Proyecto> project = proyectoRepo.findById(id);
         if(project.isEmpty()){
             return new ResponseEntity<>("Project not found.", HttpStatus.NOT_FOUND);
         }else{
-            return new ResponseEntity<>(project.get(), HttpStatus.OK);
+            Long ownerID = project.get().getUsuario().getId();
+            Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+            if(MHelpers.checkAccess(ownerID, authedUser)){
+                return new ResponseEntity<>(proyectoService.findById(id), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Project not found.", HttpStatus.NOT_FOUND);
+            }
         }
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createProject(@RequestBody Proyecto project){
-        Optional<Usuario> user = usuarioRepo.findById(project.getUsuario().getId());
-        if(user.isEmpty()){
-            return new ResponseEntity<>("User not found.", HttpStatus.BAD_REQUEST);
-        }else{
-            project.setUsuario(user.get());
-            return new ResponseEntity<>(proyectoRepo.save(project), HttpStatus.OK);
-        }
+    public ResponseEntity<?> createProject(@RequestBody Proyecto project, HttpServletRequest request){
+        Optional<Usuario> user = usuarioRepo.findById(MHelpers.getIdToken(request));
+        project.setUsuario(user.get());
+        proyectoRepo.save(project);
+        return new ResponseEntity<>("Project created.", HttpStatus.OK);
     }
     
     @PatchMapping("/update/{id}")
-    public ResponseEntity<?> updateProject(@PathVariable("id") Long id, @RequestBody Proyecto project){
+    public ResponseEntity<?> updateProject(@PathVariable("id") Long id, @RequestBody Proyecto project, HttpServletRequest request){
         Optional<Proyecto> proyecto = proyectoRepo.findById(id);
         if(proyecto.isEmpty()){
             return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
         }
-        proyecto.get().setNombre(project.getNombre());
-        proyecto.get().setDescripcion(project.getDescripcion());
-        proyecto.get().setEstado(project.getEstado());
-        proyecto.get().setInicio(project.getInicio());
-        proyecto.get().setFin(project.getFin());
-        return new ResponseEntity<>(proyectoRepo.save(proyecto.get()), HttpStatus.OK);
+        Long ownerID = proyecto.get().getUsuario().getId();
+        Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+        if(MHelpers.checkAccess(ownerID, authedUser)){
+            proyecto.get().setNombre(project.getNombre());
+            proyecto.get().setDescripcion(project.getDescripcion());
+            proyecto.get().setEstado(project.getEstado());
+            proyecto.get().setInicio(project.getInicio());
+            proyecto.get().setFin(project.getFin());
+            proyectoRepo.save(proyecto.get());
+            return new ResponseEntity<>("Project updated.", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProject(@PathVariable("id") Long id){
-        if(proyectoRepo.findById(id).isEmpty()){
+    public ResponseEntity<String> deleteProject(@PathVariable("id") Long id, HttpServletRequest request){
+        Optional<Proyecto> project = proyectoRepo.findById(id);
+        if(project.isEmpty()){
             return new ResponseEntity<>("Project not found", HttpStatus.NOT_FOUND);
         }else{
-            proyectoRepo.deleteById(id);
-            return new ResponseEntity<>("Project deleted", HttpStatus.OK);
+            Long ownerID = project.get().getUsuario().getId();
+            Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+            if(MHelpers.checkAccess(ownerID, authedUser)){
+                proyectoRepo.deleteById(id);
+                return new ResponseEntity<>("Project deleted", HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Project not found", HttpStatus.NOT_FOUND);
+            }
         }
     }
 
     @PatchMapping("/addTag/{id}")
-    public ResponseEntity<?> addTagToProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
+    public ResponseEntity<?> addTagToProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id, HttpServletRequest request){
         Optional<Proyecto> project = proyectoRepo.findById(id);
         if(project.isEmpty()){
             return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
@@ -92,19 +123,26 @@ public class ProjectController {
             if(tag.isEmpty()){
                 return new ResponseEntity<>("Tag not found", HttpStatus.BAD_REQUEST);
             }else{
-                List<Etiqueta> tagList = project.get().getEtiquetas();
-                if(tagList.contains(tag.get())){
-                    return new ResponseEntity<>("Tag already on the project.", HttpStatus.BAD_REQUEST);
+                Long ownerID = project.get().getUsuario().getId();
+                Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+                if(MHelpers.checkAccess(ownerID, authedUser)){
+                    List<Etiqueta> tagList = project.get().getEtiquetas();
+                    if(tagList.contains(tag.get())){
+                        return new ResponseEntity<>("Tag already on the project.", HttpStatus.BAD_REQUEST);
+                    }
+                    tagList.add(tag.get());
+                    project.get().setEtiquetas(tagList);
+                    proyectoRepo.save(project.get());
+                    return new ResponseEntity<>("Tag added to project.", HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
                 }
-                tagList.add(tag.get());
-                project.get().setEtiquetas(tagList);
-                return new ResponseEntity<>(proyectoRepo.save(project.get()), HttpStatus.OK);
             }
         }
     }
 
     @PatchMapping("/removeTag/{id}")
-    public ResponseEntity<?> delTagFromProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id){
+    public ResponseEntity<?> delTagFromProject(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id, HttpServletRequest request){
         Optional<Proyecto> project = proyectoRepo.findById(id);
         if(project.isEmpty()){
             return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
@@ -113,13 +151,20 @@ public class ProjectController {
             if(tag.isEmpty()){
                 return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
             }else{
-                List<Etiqueta> tagList = project.get().getEtiquetas();
-                if(!tagList.contains(tag.get())){
-                    return new ResponseEntity<>("Tag not present in the project.", HttpStatus.BAD_REQUEST);
+                Long ownerID = project.get().getUsuario().getId();
+                Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+                if(MHelpers.checkAccess(ownerID, authedUser)){
+                    List<Etiqueta> tagList = project.get().getEtiquetas();
+                    if(!tagList.contains(tag.get())){
+                        return new ResponseEntity<>("Tag not present in the project.", HttpStatus.BAD_REQUEST);
+                    }
+                    tagList.remove(tag.get());
+                    project.get().setEtiquetas(tagList);
+                    proyectoRepo.save(project.get());
+                    return new ResponseEntity<>("Tag deleted from project.", HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
                 }
-                tagList.remove(tag.get());
-                project.get().setEtiquetas(tagList);
-                return new ResponseEntity<>(proyectoRepo.save(project.get()), HttpStatus.OK);
             }
         }
     }

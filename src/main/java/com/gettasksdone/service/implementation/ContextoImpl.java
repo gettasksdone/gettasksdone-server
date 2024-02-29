@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.gettaskdone.utils.MHelpers;
+import org.springframework.stereotype.Component;
 import com.gettasksdone.dto.ContextoDTO;
 import com.gettasksdone.model.Contexto;
 import com.gettasksdone.repository.ContextoRepository;
 import com.gettasksdone.service.ContextoService;
+import com.gettasksdone.utils.MHelpers;
 
+@Component
 public class ContextoImpl implements ContextoService {
 
     @Autowired
