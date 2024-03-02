@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class TareaDTO {
+    Long id;
     String descripcion;
     LocalDateTime creacion;
     LocalDateTime vencimiento;

@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class ProyectoDTO {
+    Long id;
     String nombre;
     LocalDateTime inicio;
     LocalDateTime fin;
