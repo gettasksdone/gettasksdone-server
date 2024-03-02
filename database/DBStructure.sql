@@ -35,7 +35,8 @@ CREATE TABLE info_usuario(
 
 CREATE TABLE contexto(  
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nombre TEXT NOT NULL
+    nombre TEXT NOT NULL,
+    usuario_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -46,7 +47,8 @@ CREATE TABLE contexto(
 
 CREATE TABLE etiqueta(  
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    nombre TEXT NOT NULL
+    nombre TEXT NOT NULL,
+    usuario_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -58,7 +60,8 @@ CREATE TABLE etiqueta(
 CREATE TABLE nota(  
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contenido TEXT NOT NULL,
-    creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    usuario_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -70,7 +73,8 @@ CREATE TABLE nota(
 CREATE TABLE check_item(  
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contenido TEXT NOT NULL,
-    esta_marcado BOOL NOT NULL DEFAULT 0
+    esta_marcado BOOL NOT NULL DEFAULT 0,
+    usuario_id bigint NOT NULL
 );
 
 -- --------------------------------------------------------
@@ -183,15 +187,46 @@ ALTER TABLE `tarea_check_items`
   ADD KEY `tarea` (`tarea_id`);
 
 --
+-- Indices de la tabla `contexto`
+--
+ALTER TABLE `contexto`
+  ADD KEY `usuario` (`usuario_id`);
+
+--
+-- Indices de la tabla `etiqueta`
+--
+ALTER TABLE `etiqueta`
+  ADD KEY `usuario` (`usuario_id`);
+
+--
+-- Indices de la tabla `nota`
+--
+ALTER TABLE `nota`
+  ADD KEY `usuario` (`usuario_id`);
+
+--
+-- Indices de la tabla `check_item`
+--
+ALTER TABLE `check_item`
+  ADD KEY `usuario` (`usuario_id`);
+
+--
 -- Indices de la tabla `info_usuario`
 --
 ALTER TABLE `info_usuario`
   ADD KEY `usuario` (`usuario_id`);
 
 --
+-- Indices de la tabla `proyecto`
+--
+ALTER TABLE `proyecto`
+  ADD KEY `usuario` (`usuario_id`);
+
+--
 -- Indices de la tabla `tarea`
 --
 ALTER TABLE `tarea`
+  ADD KEY `usuario` (`usuario_id`),
   ADD KEY `contexto` (`contexto_id`);
 
 --
@@ -244,9 +279,40 @@ ALTER TABLE `info_usuario`
   ADD CONSTRAINT `InfoUsuario_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
  
 --
+-- Filtros para la tabla `proyecto`
+--
+ALTER TABLE `proyecto`
+  ADD CONSTRAINT `Proyecto_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ 
+--
+-- Filtros para la tabla `contexto`
+--
+ALTER TABLE `contexto`
+  ADD CONSTRAINT `Contexto_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `etiqueta`
+--
+ALTER TABLE `etiqueta`
+  ADD CONSTRAINT `Etiqueta_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `nota`
+--
+ALTER TABLE `nota`
+  ADD CONSTRAINT `Nota_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `check_item`
+--
+ALTER TABLE `check_item`
+  ADD CONSTRAINT `CheckItem_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `tarea`
 --
 ALTER TABLE `tarea`
+  ADD CONSTRAINT `Tarea_fk1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Tarea_fk2` FOREIGN KEY (`contexto_id`) REFERENCES `contexto` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
