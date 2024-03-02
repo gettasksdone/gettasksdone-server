@@ -35,7 +35,7 @@ public class InfoUsuarioImpl implements InfoUsuarioService {
         if(infoUser.isEmpty()){
             return null;
         }
-        return MHelpers.modelMapper().map(infoUser, InfoUsuarioDTO.class);
+        return MHelpers.modelMapper().map(infoUser.get(), InfoUsuarioDTO.class);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class InfoUsuarioImpl implements InfoUsuarioService {
         if(infoUser.isEmpty()){
             return null;
         }
-        return MHelpers.modelMapper().map(infoUser, InfoUsuarioDTO.class);
+        return MHelpers.modelMapper().map(infoUser.get(), InfoUsuarioDTO.class);
     }
 
     @Override

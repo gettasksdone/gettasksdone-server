@@ -23,7 +23,7 @@ public class CheckItemImpl implements CheckItemService {
         if(checkItem.isEmpty()){
             return null;
         }
-        return MHelpers.modelMapper().map(checkItem, CheckItemDTO.class);
+        return MHelpers.modelMapper().map(checkItem.get(), CheckItemDTO.class);
     }
 
     @Override
