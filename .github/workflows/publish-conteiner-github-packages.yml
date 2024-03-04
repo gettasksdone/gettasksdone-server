@@ -32,6 +32,7 @@ jobs:
       - name: comprobacion del checksum
         run: |
           echo ${{ github.event.client_payload.checksum }}
+          echo ${{ github.event.client_payload.artifact_name }}
 
         
       #- uses: dawidd6/action-download-artifact@v2
