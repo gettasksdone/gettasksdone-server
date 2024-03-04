@@ -41,7 +41,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: build-feature.yml
           workflow_conclusion: success
-          name: artifactjar
+          #name: artifactjar
+          name: artifactjar.zip
           path: /tmp/artifactjar
 
       - name: Listamos la carpeta donde esta nuestro artefacto
@@ -70,7 +71,7 @@ jobs:
       #2) -> Fichero jar (git accions)
       #######################################################
       
-      - uses: actions/checkout@v3        
+      - uses: actions/checkout@v4        
         if: success()
       - run: |
           echo print the current directory show files
@@ -81,7 +82,7 @@ jobs:
           ls -la /tmp
           
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dockerBuildContext
           path: |
