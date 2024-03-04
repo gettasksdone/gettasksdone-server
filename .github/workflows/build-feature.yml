@@ -66,14 +66,14 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: setup java 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           # cache: maven
 
       - name: Cache Maven dependencias
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -102,7 +102,7 @@ jobs:
 
       - name: Publish Package
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
          name: artifactjar
          path: ${{ github.workspace }}/target/${{ env.ARTIFACT_NAME }}   
