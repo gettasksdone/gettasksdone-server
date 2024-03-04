@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 
@@ -23,4 +24,8 @@ public class Nota {
     private LocalDateTime creacion;
     @OneToOne
     private Usuario usuario;
+    @ManyToOne(optional = true)
+    private Proyecto proyecto;
+    @ManyToOne(optional = true)
+    private Tarea tarea;
 }

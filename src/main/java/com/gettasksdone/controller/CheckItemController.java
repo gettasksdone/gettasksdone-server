@@ -72,6 +72,7 @@ public class CheckItemController {
             Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
             if(MHelpers.checkAccess(ownerID, authedUser)){
                 check.setUsuario(authedUser);
+                check.setTarea(task.get());
                 cItem = checkRepo.save(check);
                 items = task.get().getCheckItems();
                 items.add(cItem);

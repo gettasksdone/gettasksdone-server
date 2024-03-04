@@ -80,6 +80,8 @@ public class NoteController {
                     return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
                 }
                 note.setUsuario(authedUser);
+                note.setProyecto(project.get());
+                note.setTarea(null);
                 nota = notaRepo.save(note);
                 notas = project.get().getNotas();
                 notas.add(nota);
@@ -96,6 +98,8 @@ public class NoteController {
                     return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
                 }
                 note.setUsuario(authedUser);
+                note.setProyecto(null);
+                note.setTarea(task.get());
                 nota = notaRepo.save(note);
                 notas = task.get().getNotas();
                 notas.add(nota);
