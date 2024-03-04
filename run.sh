@@ -27,7 +27,7 @@ function mostrar_menu() {
     echo "2) construir contenedores en el servidor desde cero"
     echo "3) Modo Desarrollador Backend"
     echo "4) Borrar todo (PELIGRO)"
-    echo "0) Para salir"
+    echo "0) Para salir "
 }
 
 DOCKER_COMPOSE_FILE_FRONTED=".docker-compose/docker-compose.fronted.yml"
