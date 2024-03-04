@@ -43,7 +43,7 @@ jobs:
           workflow: build-feature.yml
           workflow_conclusion: success
           #name: artifactjar
-          name: artifactjar.zip
+          name:  ${{ github.event.client_payload.artifact_name }}
           path: /tmp/artifactjar
 
       - name: Listamos la carpeta donde esta nuestro artefacto
