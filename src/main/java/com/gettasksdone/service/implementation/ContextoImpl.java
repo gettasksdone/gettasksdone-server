@@ -23,7 +23,7 @@ public class ContextoImpl implements ContextoService {
         if(context.isEmpty()){
             return null;
         }
-        return MHelpers.modelMapper().map(context, ContextoDTO.class);
+        return MHelpers.modelMapper().map(context.get(), ContextoDTO.class);
     }
 
     @Override

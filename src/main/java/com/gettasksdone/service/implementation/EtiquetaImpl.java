@@ -23,7 +23,7 @@ public class EtiquetaImpl implements EtiquetaService {
         if(etiqueta.isEmpty()){
             return null;
         }
-        return MHelpers.modelMapper().map(etiqueta, EtiquetaDTO.class);
+        return MHelpers.modelMapper().map(etiqueta.get(), EtiquetaDTO.class);
     }
 
     @Override

@@ -49,12 +49,18 @@ public class NoteController {
 	}
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") Long id){
+    public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){
         Optional<Nota> note = notaRepo.findById(id);
         if(note.isEmpty()){
             return new ResponseEntity<>("Note not found.", HttpStatus.NOT_FOUND);
         }else{
-            return new ResponseEntity<>(note.get(), HttpStatus.OK);
+            Long ownerID = note.get().getUsuario().getId();
+            Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+            if(MHelpers.checkAccess(ownerID, authedUser)){
+                return new ResponseEntity<>(notaService.findById(id), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Note not found.", HttpStatus.NOT_FOUND);
+            }
         }
     }
 
@@ -73,6 +79,9 @@ public class NoteController {
                 if(!MHelpers.checkAccess(ownerID, authedUser)){
                     return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
                 }
+                note.setUsuario(authedUser);
+                note.setProyecto(project.get());
+                note.setTarea(null);
                 nota = notaRepo.save(note);
                 notas = project.get().getNotas();
                 notas.add(nota);
@@ -88,6 +97,9 @@ public class NoteController {
                 if(!MHelpers.checkAccess(ownerID, authedUser)){
                     return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
                 }
+                note.setUsuario(authedUser);
+                note.setProyecto(null);
+                note.setTarea(task.get());
                 nota = notaRepo.save(note);
                 notas = task.get().getNotas();
                 notas.add(nota);
@@ -97,26 +109,40 @@ public class NoteController {
         }else{
             return new ResponseEntity<>("Must assign the note to a task or a project.", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(nota, HttpStatus.OK);
+        return new ResponseEntity<>("Note created.", HttpStatus.OK);
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<?> updateNote(@PathVariable("id") Long id, @RequestBody Nota note){
+    public ResponseEntity<?> updateNote(@PathVariable("id") Long id, @RequestBody Nota note, HttpServletRequest request){
         Optional<Nota> nota = notaRepo.findById(id);
         if(nota.isEmpty()){
             return new ResponseEntity<>("Note not found.", HttpStatus.BAD_REQUEST);
         }
-        nota.get().setContenido(note.getContenido());
-        return new ResponseEntity<>(notaRepo.save(nota.get()), HttpStatus.OK);
+        Long ownerID = nota.get().getUsuario().getId();
+        Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+        if(MHelpers.checkAccess(ownerID, authedUser)){
+            nota.get().setContenido(note.getContenido());
+            notaRepo.save(nota.get());
+            return new ResponseEntity<>("Note updated.", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Note not found.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteNote(@PathVariable("id") Long id){
-        if(notaRepo.findById(id).isEmpty()){
+    public ResponseEntity<String> deleteNote(@PathVariable("id") Long id, HttpServletRequest request){
+        Optional<Nota> nota = notaRepo.findById(id);
+        if(nota.isEmpty()){
             return new ResponseEntity<>("Note not found", HttpStatus.NOT_FOUND);
         }else{
-            notaRepo.deleteById(id);
-            return new ResponseEntity<>("Note deleted", HttpStatus.OK);
+            Long ownerID = nota.get().getUsuario().getId();
+            Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+            if(MHelpers.checkAccess(ownerID, authedUser)){
+                notaRepo.deleteById(id);
+                return new ResponseEntity<>("Note deleted", HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Note not found", HttpStatus.NOT_FOUND);
+            }
         }
     }
 }

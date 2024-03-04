@@ -45,12 +45,18 @@ public class CheckItemController {
 	}
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") Long id){
+    public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){
         Optional<CheckItem> check = checkRepo.findById(id);
         if(check.isEmpty()){
             return new ResponseEntity<>("Check Item not found.", HttpStatus.NOT_FOUND);
         }else{
-            return new ResponseEntity<>(check.get(), HttpStatus.OK);
+            Long ownerID = check.get().getUsuario().getId();
+            Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+            if(MHelpers.checkAccess(ownerID, authedUser)){
+                return new ResponseEntity<>(checkService.findById(id), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Check Item not found.", HttpStatus.NOT_FOUND);
+            }
         }
     }
 
@@ -65,6 +71,8 @@ public class CheckItemController {
             Long ownerID = task.get().getUsuario().getId();
             Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
             if(MHelpers.checkAccess(ownerID, authedUser)){
+                check.setUsuario(authedUser);
+                check.setTarea(task.get());
                 cItem = checkRepo.save(check);
                 items = task.get().getCheckItems();
                 items.add(cItem);
@@ -78,18 +86,25 @@ public class CheckItemController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<?> updateCheck(@RequestBody CheckItem check, @PathVariable("id") Long id){
+    public ResponseEntity<?> updateCheck(@RequestBody CheckItem check, @PathVariable("id") Long id, HttpServletRequest request){
         Optional<CheckItem> checkItem = checkRepo.findById(id);
         if(checkItem.isEmpty()){
             return new ResponseEntity<>("Check Item not found.", HttpStatus.BAD_REQUEST);
         }
-        checkItem.get().setContenido(check.getContenido());
-        checkItem.get().setEsta_marcado(check.isEsta_marcado());
-        return new ResponseEntity<>(checkRepo.save(checkItem.get()), HttpStatus.OK);
+        Long ownerID = checkItem.get().getUsuario().getId();
+        Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+        if(MHelpers.checkAccess(ownerID, authedUser)){
+            checkItem.get().setContenido(check.getContenido());
+            checkItem.get().setEsta_marcado(check.isEsta_marcado());
+            checkRepo.save(checkItem.get());
+            return new ResponseEntity<>("Check Item updated.", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Check Item not found.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteCheck(@PathVariable("id") Long id){
+    public ResponseEntity<String> deleteCheck(@PathVariable("id") Long id, HttpServletRequest request){
         if(checkRepo.findById(id).isEmpty()){
             return new ResponseEntity<>("Check item not found", HttpStatus.NOT_FOUND);
         }else{

@@ -92,6 +92,7 @@ public class TasksController {
                 }else{
                     task.setContexto(context.get());
                     task.setUsuario(user.get());
+                    task.setProyecto(project.get());
                     tarea = tareaRepo.save(task);
                     projectTasks = project.get().getTareas();
                     projectTasks.add(tarea);

@@ -34,7 +34,7 @@ public class NotaImpl implements NotaService {
         if(note.isEmpty()){
             return null;
         }
-        return MHelpers.modelMapper().map(note, NotaDTO.class);
+        return MHelpers.modelMapper().map(note.get(), NotaDTO.class);
     }
     
 }

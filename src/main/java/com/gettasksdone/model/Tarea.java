@@ -40,6 +40,8 @@ public class Tarea {
     private int prioridad;
     @OneToOne
     private Usuario usuario;
+    @ManyToOne
+    private Proyecto proyecto;
     @OneToMany
     private List<CheckItem> checkItems = new ArrayList<>();
     @OneToMany

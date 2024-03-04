@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Entity
@@ -17,4 +19,8 @@ public class CheckItem {
     private String contenido;
     @Column(nullable = false)
     private boolean esta_marcado;
+    @OneToOne
+    private Usuario usuario;
+    @ManyToOne
+    private Tarea tarea;
 }
