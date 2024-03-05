@@ -41,11 +41,11 @@ jobs:
       - uses: actions/download-artifact@v4
         id: download-artifact
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: build-feature.yml
-          workflow_conclusion: success
+          #github_token: ${{ secrets.GITHUB_TOKEN }}
+          #workflow: build-feature.yml
+          #workflow_conclusion: success
           #name: artifactjar
-          name:  artifactjar
+          #name:  artifactjar
           path: /tmp/artifactjar/
           if-no-files-found: error
 
