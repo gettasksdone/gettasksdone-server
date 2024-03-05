@@ -38,16 +38,15 @@ jobs:
 
         
       #- uses: dawidd6/action-download-artifact@v2
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         id: download-artifact
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: build-feature.yml
-          workflow_conclusion: success
+          #workflow_conclusion: success
           #name: artifactjar
           name:  artifactjar
-          path: /tmp/artifactjar/
-          if-no-files-found: error
+          path: /tmp/artifactjar
 
       - name: Listamos la carpeta donde esta nuestro artefacto
         run: ls -R /tmp/artifactjar/
