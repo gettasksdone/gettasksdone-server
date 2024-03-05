@@ -103,11 +103,14 @@ jobs:
 
       - name: Publish Package
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
          name: artifactjar
          path: ${{ github.workspace }}/target/${{ env.ARTIFACT_NAME }}   
          run: echo '${{ github.workspace }}/target/${{ env.ARTIFACT_NAME }}'
+         
+      - name: Output artifact ID
+        run:  echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'
 
 
       ######################################################## 
