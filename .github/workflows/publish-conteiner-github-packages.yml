@@ -19,6 +19,8 @@ jobs:
   download-artifact-job:
 
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     permissions:
       contents: write
       actions: write
