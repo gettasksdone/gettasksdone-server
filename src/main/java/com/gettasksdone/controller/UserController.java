@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/user")
+@SuppressWarnings("null")
 public class UserController {
 
     @Autowired

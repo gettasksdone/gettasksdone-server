@@ -25,11 +25,11 @@ import com.gettasksdone.repository.TareaRepository;
 import com.gettasksdone.repository.UsuarioRepository;
 import com.gettasksdone.service.NotaService;
 import com.gettasksdone.utils.MHelpers;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/note")
+@SuppressWarnings("null")
 public class NoteController {
     @Autowired
     private NotaRepository notaRepo;
@@ -47,6 +47,12 @@ public class NoteController {
 	public ResponseEntity<?> allNotes(){
 		return new ResponseEntity<>(notaService.findAll(), HttpStatus.OK);
 	}
+
+    @GetMapping("/")
+    public ResponseEntity<?> notesFromUser(HttpServletRequest request){
+        Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
+        return new ResponseEntity<>(notaService.findByUsuario(authedUser.get()), HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){

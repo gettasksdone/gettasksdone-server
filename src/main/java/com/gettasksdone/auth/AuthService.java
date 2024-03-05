@@ -1,9 +1,6 @@
 package com.gettasksdone.auth;
 
 import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,12 +16,12 @@ import com.gettasksdone.model.Usuario;
 import com.gettasksdone.model.Usuario.Rol;
 import com.gettasksdone.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class AuthService {
 
     private final UsuarioRepository userRepository;

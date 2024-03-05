@@ -27,6 +27,7 @@ import com.gettasksdone.repository.EtiquetaRepository;
 
 @RestController
 @RequestMapping("/project")
+@SuppressWarnings("null")
 public class ProjectController {
     
     @Autowired

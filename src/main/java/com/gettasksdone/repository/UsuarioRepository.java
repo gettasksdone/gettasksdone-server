@@ -8,6 +8,7 @@ import java.util.Optional;
 
 
 @Repository
+@SuppressWarnings("null")
 public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
     
     List<Usuario> findAll();

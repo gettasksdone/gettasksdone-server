@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import com.gettasksdone.dto.InfoUsuarioDTO;
 import com.gettasksdone.model.InfoUsuario;
 import com.gettasksdone.model.Usuario;
-import com.gettasksdone.model.Usuario.Rol;
 import com.gettasksdone.repository.InfoUsuarioRepository;
 import com.gettasksdone.repository.UsuarioRepository;
 import com.gettasksdone.service.InfoUsuarioService;
@@ -25,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/userData")
+@SuppressWarnings("null")
 public class UserInfoController {
     @Autowired
     private InfoUsuarioRepository infoUsuarioRepo;

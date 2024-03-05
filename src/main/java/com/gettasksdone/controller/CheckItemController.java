@@ -23,11 +23,11 @@ import com.gettasksdone.repository.TareaRepository;
 import com.gettasksdone.repository.UsuarioRepository;
 import com.gettasksdone.service.CheckItemService;
 import com.gettasksdone.utils.MHelpers;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/check")
+@SuppressWarnings("null")
 public class CheckItemController {
     @Autowired
     private CheckItemRepository checkRepo;
@@ -43,6 +43,12 @@ public class CheckItemController {
 	public ResponseEntity<?> allChecks(){
 		return new ResponseEntity<>(checkService.findAll(), HttpStatus.OK);
 	}
+
+    @GetMapping("/")
+    public ResponseEntity<?> checkItemsFromUser(HttpServletRequest request) {
+        Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
+        return new ResponseEntity<>(checkService.findByUsuario(authedUser.get()), HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){

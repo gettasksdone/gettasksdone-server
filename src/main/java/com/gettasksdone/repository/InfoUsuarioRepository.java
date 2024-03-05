@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@SuppressWarnings("null")
 public interface InfoUsuarioRepository extends JpaRepository<InfoUsuario, Long>{
     List<InfoUsuario> findAll();
     Optional<InfoUsuario> findById(Long id);

@@ -32,6 +32,7 @@ import com.gettasksdone.repository.EtiquetaRepository;
 
 @RestController
 @RequestMapping("/task")
+@SuppressWarnings("null")
 public class TasksController {
     @Autowired
     private TareaRepository tareaRepo;

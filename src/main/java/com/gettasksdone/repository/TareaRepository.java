@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.time.LocalDateTime;
 
 @Repository
+@SuppressWarnings("null")
 public interface TareaRepository extends JpaRepository<Tarea, Long>{
     List<Tarea> findAll();
     Optional<Tarea> findById(Long id);

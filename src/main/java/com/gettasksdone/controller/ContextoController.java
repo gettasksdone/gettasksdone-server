@@ -21,8 +21,10 @@ import com.gettasksdone.service.ContextoService;
 import com.gettasksdone.utils.MHelpers;
 import jakarta.servlet.http.HttpServletRequest;
 
+
 @RestController
 @RequestMapping("/context")
+@SuppressWarnings("null")
 public class ContextoController {
 
     @Autowired
@@ -37,6 +39,12 @@ public class ContextoController {
 	public ResponseEntity<?> allContexts(){
 		return new ResponseEntity<>(contextoService.findAll(), HttpStatus.OK);
 	}
+
+    @GetMapping("/")
+    public ResponseEntity<?> contextsFromUser(HttpServletRequest request) {
+        Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
+        return new ResponseEntity<>(contextoService.findByUsuario(authedUser.get()), HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
 	public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){

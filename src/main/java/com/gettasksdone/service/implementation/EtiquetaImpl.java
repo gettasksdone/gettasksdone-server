@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.gettasksdone.dto.EtiquetaDTO;
 import com.gettasksdone.model.Etiqueta;
+import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.EtiquetaRepository;
 import com.gettasksdone.service.EtiquetaService;
 import com.gettasksdone.utils.MHelpers;
@@ -30,6 +31,17 @@ public class EtiquetaImpl implements EtiquetaService {
     public List<EtiquetaDTO> findAll() {
         List<EtiquetaDTO> etiquetasDTO = new ArrayList<>();
         List<Etiqueta> etiquetas = this.etiquetaRepo.findAll();
+        for(Etiqueta etiqueta: etiquetas){
+            EtiquetaDTO etiquetaDTO = MHelpers.modelMapper().map(etiqueta, EtiquetaDTO.class);
+            etiquetasDTO.add(etiquetaDTO);
+        }
+        return etiquetasDTO;
+    }
+
+    @Override
+    public List<EtiquetaDTO> findByUsuario(Usuario usuario) {
+        List<EtiquetaDTO> etiquetasDTO = new ArrayList<>();
+        List<Etiqueta> etiquetas = this.etiquetaRepo.findByUsuario(usuario);
         for(Etiqueta etiqueta: etiquetas){
             EtiquetaDTO etiquetaDTO = MHelpers.modelMapper().map(etiqueta, EtiquetaDTO.class);
             etiquetasDTO.add(etiquetaDTO);

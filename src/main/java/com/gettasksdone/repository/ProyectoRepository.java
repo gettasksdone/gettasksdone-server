@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.time.LocalDateTime;
 
 @Repository
+@SuppressWarnings("null")
 public interface ProyectoRepository extends JpaRepository<Proyecto, Long>{
     List<Proyecto> findAll();
     Optional<Proyecto> findById(Long id);

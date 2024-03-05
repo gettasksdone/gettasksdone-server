@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.gettasksdone.dto.ContextoDTO;
 import com.gettasksdone.model.Contexto;
+import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.ContextoRepository;
 import com.gettasksdone.service.ContextoService;
 import com.gettasksdone.utils.MHelpers;
@@ -30,6 +31,17 @@ public class ContextoImpl implements ContextoService {
     public List<ContextoDTO> findAll() {
         List<ContextoDTO> contextosDTO = new ArrayList<>();
         List<Contexto> contextos = this.contextoRepo.findAll();
+        for(Contexto contexto: contextos){
+            ContextoDTO contextoDTO = MHelpers.modelMapper().map(contexto, ContextoDTO.class);
+            contextosDTO.add(contextoDTO);
+        }
+        return contextosDTO;
+    }
+
+    @Override
+    public List<ContextoDTO> findByUsuario(Usuario usuario) {
+        List<ContextoDTO> contextosDTO = new ArrayList<>();
+        List<Contexto> contextos = this.contextoRepo.findByUsuario(usuario);
         for(Contexto contexto: contextos){
             ContextoDTO contextoDTO = MHelpers.modelMapper().map(contexto, ContextoDTO.class);
             contextosDTO.add(contextoDTO);

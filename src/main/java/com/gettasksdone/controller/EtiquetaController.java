@@ -1,6 +1,5 @@
 package com.gettasksdone.controller;
 
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.gettasksdone.dto.EtiquetaDTO;
 import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.model.Usuario;
 import com.gettasksdone.repository.EtiquetaRepository;
@@ -26,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/tag")
+@SuppressWarnings("null")
 public class EtiquetaController {
 
     @Autowired
@@ -40,6 +38,12 @@ public class EtiquetaController {
 	public ResponseEntity<?> allTags(){
 		return new ResponseEntity<>(etiquetaService.findAll(), HttpStatus.OK);
 	}
+
+    @GetMapping("/")
+    public ResponseEntity<?> tagsFromUser(HttpServletRequest request){
+        Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
+        return new ResponseEntity<>(etiquetaService.findByUsuario(authedUser.get()), HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
 	public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){
