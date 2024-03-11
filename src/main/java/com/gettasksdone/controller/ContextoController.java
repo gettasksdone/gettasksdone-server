@@ -40,7 +40,7 @@ public class ContextoController {
 		return new ResponseEntity<>(contextoService.findAll(), HttpStatus.OK);
 	}
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<?> contextsFromUser(HttpServletRequest request) {
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         return new ResponseEntity<>(contextoService.findByUsuario(authedUser.get()), HttpStatus.OK);

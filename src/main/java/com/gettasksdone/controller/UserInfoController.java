@@ -33,7 +33,7 @@ public class UserInfoController {
     @Autowired
     private InfoUsuarioService infoUsuarioService;
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<?> dataUser(HttpServletRequest request) {
         Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
         InfoUsuarioDTO infoUsuario = infoUsuarioService.findByUsuario(authedUser);

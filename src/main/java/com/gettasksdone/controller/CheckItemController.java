@@ -44,7 +44,7 @@ public class CheckItemController {
 		return new ResponseEntity<>(checkService.findAll(), HttpStatus.OK);
 	}
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<?> checkItemsFromUser(HttpServletRequest request) {
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         return new ResponseEntity<>(checkService.findByUsuario(authedUser.get()), HttpStatus.OK);

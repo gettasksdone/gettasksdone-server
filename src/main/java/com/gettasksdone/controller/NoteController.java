@@ -48,7 +48,7 @@ public class NoteController {
 		return new ResponseEntity<>(notaService.findAll(), HttpStatus.OK);
 	}
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<?> notesFromUser(HttpServletRequest request){
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         return new ResponseEntity<>(notaService.findByUsuario(authedUser.get()), HttpStatus.OK);

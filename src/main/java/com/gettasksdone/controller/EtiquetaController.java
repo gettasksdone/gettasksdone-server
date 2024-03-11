@@ -39,7 +39,7 @@ public class EtiquetaController {
 		return new ResponseEntity<>(etiquetaService.findAll(), HttpStatus.OK);
 	}
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<?> tagsFromUser(HttpServletRequest request){
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         return new ResponseEntity<>(etiquetaService.findByUsuario(authedUser.get()), HttpStatus.OK);

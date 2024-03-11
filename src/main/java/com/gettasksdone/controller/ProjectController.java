@@ -39,7 +39,7 @@ public class ProjectController {
     @Autowired
     private ProyectoService proyectoService;
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<?> projectsFromUser(HttpServletRequest request) {
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         return new ResponseEntity<>(proyectoService.findByUsuario(authedUser.get()), HttpStatus.OK);

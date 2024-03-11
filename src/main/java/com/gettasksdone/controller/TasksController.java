@@ -47,7 +47,7 @@ public class TasksController {
     @Autowired
     private TareaService tareaService;
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<?> tasksFromUser(HttpServletRequest request) {
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         return new ResponseEntity<>(tareaService.findByUsuario(authedUser.get()), HttpStatus.OK);

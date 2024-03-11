@@ -36,7 +36,7 @@ public class UserController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @GetMapping("/")
+    @GetMapping("/authed")
     public ResponseEntity<Object> dataUser(HttpServletRequest request){
         UserDTO usuario = usuarioService.findById(MHelpers.getIdToken(request));
         if(usuario == null){
