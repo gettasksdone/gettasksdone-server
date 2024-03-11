@@ -62,22 +62,14 @@ public class UserInfoController {
 
     @PostMapping("/create")
 	public ResponseEntity<?> createUserData(@RequestBody InfoUsuario userData, HttpServletRequest request) {
-        Optional<Usuario> user = usuarioRepo.findById(userData.getUsuario().getId());
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
-        if(user.isEmpty()){
-            return new ResponseEntity<>("User does not exist.", HttpStatus.BAD_REQUEST);
-        }
-        Optional<InfoUsuario> infoUsuario = infoUsuarioRepo.findByUsuario(user.get());
+        Optional<InfoUsuario> infoUsuario = infoUsuarioRepo.findByUsuario(authedUser.get());
         if(infoUsuario.isPresent()){
             return new ResponseEntity<>("User data already exist for this user.", HttpStatus.BAD_REQUEST);
         }
-        userData.setUsuario(user.get());
-        if(MHelpers.checkAccess(user.get().getId(), authedUser.get())){
-            infoUsuarioRepo.save(userData);
-            return new ResponseEntity<>("User data created.", HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>("User does not exist.", HttpStatus.BAD_REQUEST);
-        }
+        userData.setUsuario(authedUser.get());
+        infoUsuarioRepo.save(userData);
+        return new ResponseEntity<>("User data created.", HttpStatus.OK);
 	}
 
     @PatchMapping("/update/{id}")
