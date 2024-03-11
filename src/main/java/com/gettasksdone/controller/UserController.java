@@ -38,7 +38,11 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<Object> dataUser(HttpServletRequest request){
-        return ResponseEntity.ok(this.usuarioService.findById(MHelpers.getIdToken(request)));
+        UserDTO usuario = usuarioService.findById(MHelpers.getIdToken(request));
+        if(usuario == null){
+            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('ADMINISTRADOR')")

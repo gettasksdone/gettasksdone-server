@@ -36,7 +36,11 @@ public class UserInfoController {
     @GetMapping("/")
     public ResponseEntity<?> dataUser(HttpServletRequest request) {
         Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
-        return new ResponseEntity<>(this.infoUsuarioService.findByUsuario(authedUser), HttpStatus.OK);
+        InfoUsuarioDTO infoUsuario = infoUsuarioService.findByUsuario(authedUser);
+        if(infoUsuario == null){
+            return new ResponseEntity<>("This user does not have additional info created.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(infoUsuario, HttpStatus.OK);
     }
     
     @PreAuthorize("hasAuthority('ADMINISTRADOR')")
