@@ -5,8 +5,7 @@ services:
       context: .
       target: development
     ports:
-      - "443:443"
-      - "443:443"
+      - "8080:443"
     environment:
       - SERVER_PORT=443
       - MYSQL_URL=jdbc:mysql://db/getTasksDone
