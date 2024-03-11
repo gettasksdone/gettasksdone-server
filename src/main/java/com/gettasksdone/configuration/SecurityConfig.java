@@ -2,6 +2,7 @@ package com.gettasksdone.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,7 +48,7 @@ public class SecurityConfig {
               authRequest
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/ping").permitAll()
-                
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated() //Necesitamos estar autenticados para poder ver los diferentes endpoint
                 )
             .sessionManagement(sessionManager -> 
