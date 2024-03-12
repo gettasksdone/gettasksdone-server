@@ -115,7 +115,7 @@ public class NoteController {
         }else{
             return new ResponseEntity<>("Must assign the note to a task or a project.", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Note created.", HttpStatus.OK);
+        return new ResponseEntity<>(nota.getId(), HttpStatus.OK);
     }
 
     @PatchMapping("/update/{id}")
