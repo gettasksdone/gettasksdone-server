@@ -6,7 +6,7 @@ import lombok.Data;
 public class InfoUsuarioDTO {
     Long id;
     String nombre;
-    int telefono;
+    long telefono;
     String puesto;
     String departamento;
 }
