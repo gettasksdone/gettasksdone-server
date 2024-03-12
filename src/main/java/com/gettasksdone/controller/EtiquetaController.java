@@ -65,8 +65,8 @@ public class EtiquetaController {
 	public ResponseEntity<?> createTag(@RequestBody Etiqueta etiqueta, HttpServletRequest request) {
         Usuario user = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
         etiqueta.setUsuario(user);
-        etiquetaRepo.save(etiqueta);
-		return new ResponseEntity<>("Tag created.", HttpStatus.OK);
+        Etiqueta cEtiqueta = etiquetaRepo.save(etiqueta);
+		return new ResponseEntity<>(cEtiqueta.getId(), HttpStatus.OK);
 	}
 
     @PatchMapping("/update/{id}")
