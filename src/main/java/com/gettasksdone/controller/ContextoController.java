@@ -66,8 +66,8 @@ public class ContextoController {
 	public ResponseEntity<?> createContext(@RequestBody Contexto contexto, HttpServletRequest request) {
         Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
         contexto.setUsuario(authedUser);
-        contextoRepo.save(contexto);
-		return new ResponseEntity<>(contexto.getId(), HttpStatus.OK);
+        Contexto cContexto = contextoRepo.save(contexto);
+		return new ResponseEntity<>(cContexto.getId(), HttpStatus.OK);
 	}
 
     @PatchMapping("/update/{id}")
