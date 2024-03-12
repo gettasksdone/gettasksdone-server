@@ -72,8 +72,8 @@ public class ProjectController {
     public ResponseEntity<?> createProject(@RequestBody Proyecto project, HttpServletRequest request){
         Optional<Usuario> user = usuarioRepo.findById(MHelpers.getIdToken(request));
         project.setUsuario(user.get());
-        proyectoRepo.save(project);
-        return new ResponseEntity<>("Project created.", HttpStatus.OK);
+        Proyecto proyecto = proyectoRepo.save(project);
+        return new ResponseEntity<>(proyecto.getId(), HttpStatus.OK);
     }
     
     @PatchMapping("/update/{id}")
