@@ -84,7 +84,7 @@ public class CheckItemController {
                 items.add(cItem);
                 task.get().setCheckItems(items);
                 tareaRepo.save(task.get());
-                return new ResponseEntity<>("Check item created.", HttpStatus.OK);
+                return new ResponseEntity<>(check.getId(), HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
             }
