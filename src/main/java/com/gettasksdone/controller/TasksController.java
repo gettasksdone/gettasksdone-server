@@ -99,7 +99,7 @@ public class TasksController {
                     projectTasks.add(tarea);
                     project.get().setTareas(projectTasks);
                     proyectoRepo.save(project.get());
-                    return new ResponseEntity<>("Task created.", HttpStatus.OK);
+                    return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
                 }
             }else{
                 return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
