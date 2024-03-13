@@ -134,7 +134,6 @@ jobs:
 # Descarga del artefactor
 # **************************************************************************
 
-jobs:
   download-artifact-job:
 
     runs-on: ubuntu-latest
