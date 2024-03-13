@@ -131,10 +131,10 @@ jobs:
 
 
 # **************************************************************************
-# Descarga del artefactor y publicacion
+# Descarga del artefactor
 # **************************************************************************
 
-  build-container:
+  download-artifact-job:
 
     needs: build-maven-project
     runs-on: ubuntu-latest
@@ -170,9 +170,9 @@ jobs:
           echo print the current directory show files
           ls -la 
           echo preparing docker build context
-          cp Dockerfile .
-          cp -r /tmp/artifactjar/server-0.0.1-SNAPSHOT.jar .
-          ls -la ./
+          cp Dockerfile /tmp/Dockerfile
+          cp -r /tmp/artifactjar/server-0.0.1-SNAPSHOT.jar /tmp/server-0.0.1-SNAPSHOT.jar
+          ls -la /tmp
           
 
       - name: Upload artifact
@@ -212,9 +212,28 @@ jobs:
           username: ${{ github.actor }}
           password : ${{ secrets.GITHUB_TOKEN }} 
 
+        ######################################################## 
+        # 4- Download artifact
+        ######################################################## 
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: workflow-gettaskdone.yml
+          name: dockerBuildContext
+          path: ./dockerBuildContext
+          repository: gettasksdone/gettasksdone-server
+
 
         ######################################################## 
-        # 4- Lista 
+        # 5- Lista dockerBuild
+        ######################################################## 
+       - name: Listamos la carpeta donde descargamos nuestro artefacto
+        run: ls -R ./
+
+
+        ######################################################## 
+        # 6- Lista 
         ######################################################## 
       - name: Display structure of downloaded files
         run: |
@@ -226,7 +245,7 @@ jobs:
 
      
         ######################################################## 
-        # 5- Display structure
+        # 7- Display structure
         ######################################################### 
       - name : Build and push image using action 
         uses : docker/build-push-action@v4 
@@ -235,8 +254,8 @@ jobs:
           workflow: workflow-gettaskdone.yml
           repository: gettasksdone/gettasksdone-server
 
-          context : ./          # Context where Dockerfile and artifact(.jar, .war ...) lives
-          file : ./Dockerfile # Where  Dockerfile is it. 
+          context : ./dockerBuildContext # Context where Dockerfile and artifact(.jar, .war ...) lives
+          file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
           #Parameters that our Dockerfile need.
           build-args: |      
             JAR_FILE=server-0.0.1-SNAPSHOT.jar
