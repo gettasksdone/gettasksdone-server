@@ -192,8 +192,8 @@ jobs:
     needs: download-artifact-job
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      actions: write
+      contents: read
+      actions: read
       packages: write
 
     steps:
