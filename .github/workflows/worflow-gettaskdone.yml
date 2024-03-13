@@ -239,7 +239,7 @@ jobs:
         # 5- Lista dockerBuild
         ######################################################## 
       - name: Display structure of downloaded files
-        run: ls -R dockerBuildContext
+        run: ls -al
 
 
         ######################################################## 
@@ -268,7 +268,7 @@ jobs:
           file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
           #Parameters that our Dockerfile need.
           build-args: |      
-            JAR_FILE=dockerBuildContext
+            JAR_FILE=server-0.0.1-SNAPSHOT.jar
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           push : true # Push image to registry, false by deafult..
           #me modifico el nombre de github 
