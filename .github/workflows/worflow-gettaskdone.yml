@@ -247,7 +247,6 @@ jobs:
         if: success()
       - run: |
           echo print the current directory show files
-          ls -la 
           echo preparing docker build context
           cp -R src/ ./dockerBuildContext/
           cp -R .mvn/ ./dockerBuildContext/.mvn
@@ -271,7 +270,7 @@ jobs:
         # 7- Display structure
         ######################################################### 
       - name : Build and push image using action 
-        uses : docker/build-push-action@v3
+        uses : docker/build-push-action@v4
         with :
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: workflow-gettaskdone.yml
