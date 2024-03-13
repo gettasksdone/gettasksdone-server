@@ -260,6 +260,10 @@ jobs:
       - name : Build and push image using action 
         uses : docker/build-push-action@v4 
         with :
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: workflow-gettaskdone.yml
+          repository: gettasksdone/gettasksdone-server
+
           context : ./dockerBuildContext # Context where Dockerfile and artifact(.jar, .war ...) lives
           file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
           #Parameters that our Dockerfile need.
