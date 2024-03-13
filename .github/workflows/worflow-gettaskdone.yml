@@ -226,10 +226,14 @@ jobs:
         # 4- Download artifact
         ######################################################## 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: workflow-gettaskdone.yml
           name: dockerBuildContext
           path: ./dockerBuildContext
+          repository: gettasksdone/gettasksdone-server
+
 
         ######################################################## 
         # 5- Lista dockerBuild
