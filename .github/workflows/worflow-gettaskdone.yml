@@ -65,7 +65,7 @@ jobs:
 # **************************************************************************
 
   build-maven-proyect:
-    needs: setup-bd
+    needs: bd-mysql
     runs-on: ubuntu-latest
     env:
       ARTIFACT_NAME: 'server-0.0.1-SNAPSHOT.jar'
@@ -136,6 +136,7 @@ jobs:
 
   download-artifact-job:
 
+    needs: build-maven-proyect
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -189,10 +190,7 @@ jobs:
 # **************************************************************************
 
   docker-job:
-
-    needs:
-      - download-artifact-job
-
+    needs: download-artifact-job
     runs-on: ubuntu-latest
     permissions:
       contents: read
