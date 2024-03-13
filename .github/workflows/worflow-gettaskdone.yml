@@ -131,7 +131,7 @@ jobs:
 
 
 # **************************************************************************
-# Descarga del artefactor
+# Descarga del artefactor y publicacion
 # **************************************************************************
 
   download-artifact-job:
@@ -212,28 +212,9 @@ jobs:
           username: ${{ github.actor }}
           password : ${{ secrets.GITHUB_TOKEN }} 
 
-        ######################################################## 
-        # 4- Download artifact
-        ######################################################## 
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: workflow-gettaskdone.yml
-          name: dockerBuildContext
-          path: ./dockerBuildContext
-          repository: gettasksdone/gettasksdone-server
-
 
         ######################################################## 
-        # 5- Lista dockerBuild
-        ######################################################## 
-      - name: Display structure of downloaded files
-        run: ls -al
-
-
-        ######################################################## 
-        # 6- Lista 
+        # 4- Lista 
         ######################################################## 
       - name: Display structure of downloaded files
         run: |
@@ -245,7 +226,7 @@ jobs:
 
      
         ######################################################## 
-        # 7- Display structure
+        # 5- Display structure
         ######################################################### 
       - name : Build and push image using action 
         uses : docker/build-push-action@v4 
