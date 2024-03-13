@@ -252,7 +252,7 @@ jobs:
           cp -R src/ ./dockerBuildContext/
           cp -R .mvn/ ./dockerBuildContext/.mvn
           cp mvnw pom.xml ./dockerBuildContext/
-          ls -laR
+          ls -laR ./dockerBuildContext/
 
 
         ######################################################## 
