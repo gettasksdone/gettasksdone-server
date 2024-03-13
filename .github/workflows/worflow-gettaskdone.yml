@@ -236,7 +236,7 @@ jobs:
         # 5- Lista dockerBuild
         ######################################################## 
       - name: Display structure of downloaded files
-        run: ls -al
+        run: ls -Rla .
 
 
         ######################################################## 
@@ -264,7 +264,7 @@ jobs:
           context : ./dockerBuildContext # Context where Dockerfile and artifact(.jar, .war ...) lives
           file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
           #Parameters that our Dockerfile need.
-          build-args: |      
+          build-args: |
             JAR_FILE=dockerBuildContext
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           push : true # Push image to registry, false by deafult..
