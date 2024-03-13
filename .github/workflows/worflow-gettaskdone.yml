@@ -240,6 +240,22 @@ jobs:
 
 
         ######################################################## 
+        # 5.1- Prueba
+        ######################################################## 
+      - name: Copia de fichero de nuestro repositorio
+        uses: actions/checkout@v4
+        if: success()
+      - run: |
+          echo print the current directory show files
+          ls -la 
+          echo preparing docker build context
+          cp -R src/ ./dockerBuildContext/
+          cp -R .mvn/ ./dockerBuildContext/.mvn
+          cp mvnw pom.xml ./dockerBuildContext/
+          ls -laR
+
+
+        ######################################################## 
         # 6- Lista 
         ######################################################## 
       - name: Display structure of downloaded files
