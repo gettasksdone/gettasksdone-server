@@ -268,7 +268,7 @@ jobs:
           file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
           #Parameters that our Dockerfile need.
           build-args: |      
-            JAR_FILE=${{ github.event.client_payload.artifact_name }}
+            JAR_FILE=dockerBuildContext
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           push : true # Push image to registry, false by deafult..
           #me modifico el nombre de github 
