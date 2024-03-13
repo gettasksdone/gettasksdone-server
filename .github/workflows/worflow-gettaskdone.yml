@@ -159,7 +159,7 @@ jobs:
 
       ####################################################### 
       #Preparamos los ficheros necesarios para construir
-      #nuestro contendor de docker donde necesitaremos:
+      #nuestro contenedor de docker donde necesitaremos:
       #1) -> Dockerfile ( nuestra rama)
       #2) -> Fichero jar (git accions)
       #######################################################
@@ -170,7 +170,7 @@ jobs:
           echo print the current directory show files
           ls -la 
           echo preparing docker build context
-          cp .docker/Dockerfile /tmp/Dockerfile
+          cp Dockerfile /tmp/Dockerfile
           cp /tmp/artifactjar/${{ github.event.client_payload.artifact_name }} /tmp/${{ github.event.client_payload.artifact_name }}
           ls -la /tmp
           
