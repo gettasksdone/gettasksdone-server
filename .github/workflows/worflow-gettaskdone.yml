@@ -72,7 +72,6 @@ jobs:
     permissions:
       contents: write
       packages: write
-
     steps:
       - uses: actions/checkout@v4
 
@@ -135,7 +134,6 @@ jobs:
 # **************************************************************************
 
   download-artifact-job:
-
     needs: build-maven-project
     runs-on: ubuntu-latest
     permissions:
@@ -190,6 +188,15 @@ jobs:
 # Creación del contenedor docker y publicación
 # **************************************************************************
 
+  docker-job:
+    needs: download-artifact-job
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+      packages: write
+
+    steps:
       ######################################################## 
       # 1- poder compilar las imagenes
       ######################################################## 
@@ -228,8 +235,8 @@ jobs:
         ######################################################## 
         # 5- Lista dockerBuild
         ######################################################## 
-       - name: Listamos la carpeta donde descargamos nuestro artefacto
-        run: ls -R ./
+      - name: Display structure of downloaded files
+        run: ls -al
 
 
         ######################################################## 
@@ -237,7 +244,7 @@ jobs:
         ######################################################## 
       - name: Display structure of downloaded files
         run: |
-          JAR_FILE=server-0.0.1-SNAPSHOT.jar
+          JAR_FILE=${{ github.event.client_payload.artifact_name }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           echo $JARFILE
           echo $DB_PASSWORD
@@ -258,7 +265,7 @@ jobs:
           file : ./dockerBuildContext/Dockerfile # Where  Dockerfile is it. 
           #Parameters that our Dockerfile need.
           build-args: |      
-            JAR_FILE=server-0.0.1-SNAPSHOT.jar
+            JAR_FILE=dockerBuildContext
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           push : true # Push image to registry, false by deafult..
           #me modifico el nombre de github 
