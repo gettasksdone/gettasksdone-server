@@ -9,7 +9,7 @@ on:
   #pull_request
   push:
     branches:
-      - dev-sso-ii      # El workflow se activa para cualquier pull request en las rama main 
+      #- dev-sso-ii      # El workflow se activa para cualquier pull request en las rama main 
 jobs:
 
 # **************************************************************************
