@@ -5,7 +5,7 @@ on:
   #pull_request
   push:
     branches:
-      - main      # El workflow se activa para cualquier pull request en las rama main 
+      #- main      # El workflow se activa para cualquier pull request en las rama main 
 jobs:
 
 # **************************************************************************
