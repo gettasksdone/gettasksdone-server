@@ -9,7 +9,6 @@ CREATE TABLE usuario(
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     rol int NOT NULL,
-    provider VARCHAR(20) NOT NULL,
     password VARCHAR(255) NOT NULL COMMENT 'SHA'
 );
 

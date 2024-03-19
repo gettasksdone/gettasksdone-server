@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +25,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Usuario implements UserDetails {
     public enum Rol{USUARIO, ADMINISTRADOR};
-    public enum Provider{LOCAL, GOOGLE};
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,9 +37,6 @@ public class Usuario implements UserDetails {
     private String password;
     @Column(nullable = false)
     private Rol rol;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Provider provider;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority((rol.name())));

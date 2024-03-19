@@ -23,7 +23,7 @@ public class AuthController {
     }
 
 
-    @GetMapping(value = "/prueba")
+    @GetMapping(value = "/oauth/login")
     public String prueba(Model model) {
         return "login";
     }

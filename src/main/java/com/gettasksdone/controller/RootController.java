@@ -13,5 +13,9 @@ public class RootController {
     public String ping(){
         return "Pong";
     }
+    @GetMapping("/authedPing")
+    public String authedPing(){
+        return "Authed Pong";
+    }
 
 }
