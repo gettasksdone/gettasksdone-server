@@ -22,7 +22,7 @@ CREATE TABLE info_usuario(
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     usuario_id bigint NOT NULL,
     nombre TEXT NOT NULL,
-    telefono int NOT NULL,
+    telefono BIGINT NOT NULL,
     puesto TEXT NOT NULL,
     departamento TEXT NOT NULL
 );
