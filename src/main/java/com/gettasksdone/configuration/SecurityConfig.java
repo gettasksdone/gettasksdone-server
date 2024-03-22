@@ -1,5 +1,6 @@
 package com.gettasksdone.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,6 +38,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    @Autowired
+    SuccessHandler successHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
@@ -47,10 +51,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(authRequest ->
               authRequest
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers("/api/ping").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated() //Necesitamos estar autenticados para poder ver los diferentes endpoint
                 )
+	    .oauth2Login(oauth2login -> oauth2login
+                .successHandler(successHandler))
             .sessionManagement(sessionManager -> 
                 sessionManager
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
