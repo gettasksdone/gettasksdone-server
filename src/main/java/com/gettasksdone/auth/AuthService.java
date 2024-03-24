@@ -19,6 +19,7 @@ import com.gettasksdone.model.Usuario;
 import com.gettasksdone.model.Usuario.Rol;
 import com.gettasksdone.repository.UsuarioRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -87,8 +88,9 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<String> manageOAuth(HttpServletResponse response){
-        String username = response.getHeader("username");
+    public ResponseEntity<String> manageOAuth(HttpServletRequest request){
+        String username = (String) request.getSession().getAttribute("username");
+        
         AuthResponse tokenR = null;
         logger.info("USER EMAIL:"+username);
         Optional<Usuario> usuario = userRepository.findByUsername(username);

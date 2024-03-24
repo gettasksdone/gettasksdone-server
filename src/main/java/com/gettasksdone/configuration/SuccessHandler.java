@@ -45,6 +45,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler{
             // logger.info("Request: " + request.getRequestedSessionId());
             // logger.info("Response Status: " + response.getStatus());
             // logger.info("FIN DE PARAMETROS DE ENTRADA");
+            logger.info("Session ID onAuthenticationSuccess: " + request.getSession().getId());
  
 
             AuthResponse token = null;
@@ -53,6 +54,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler{
                 String username = userDetails.getAttribute("email");
                 logger.info("USER EMAIL:"+username);
                 response.addHeader("username",username);
+                request.getSession().setAttribute("username", username);
             //     Optional<Usuario> usuario = userRepository.findByUsername(username);
             //     if(usuario.isEmpty()){
             //         usuario = userRepository.findByEmail(username);

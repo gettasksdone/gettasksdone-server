@@ -37,15 +37,19 @@ public class AuthController {
     @GetMapping(value = "/oauth")
     public ResponseEntity<String> oauthManager(HttpServletRequest request,  HttpServletResponse response) {
 
-        String username = response.getHeader("username");
-        Collection<String> headers = response.getHeaderNames();
-        Iterator<String> headersIterator = headers.iterator();
-        while(headersIterator.hasNext()){
-            logger.info("Header: " + headersIterator.next());
-        }
+        //String username = response.getHeader("username");
+        String username = (String) request.getSession().getAttribute("username");
+        // Collection<String> headers = response.getHeaderNames();
+        // Iterator<String> headersIterator = headers.iterator();
+        // while(headersIterator.hasNext()){
+        //     logger.info("Header: " + headersIterator.next());
+        // }
+        logger.info("Session ID oauthManager: " + request.getSession().getId());
         logger.info("EL CORREOOOO ES :" + username);
+        logger.info("El ...." + request.getSession().getAttributeNames());
+        
 
         //Implementar la lógica de creación del token.
-        return authService.manageOAuth(response);
+        return authService.manageOAuth(request);
     }
 }
