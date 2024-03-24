@@ -1,9 +1,17 @@
 package com.gettasksdone.auth;
 
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Collection;
+import java.util.Iterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -12,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
 
     @PostMapping(value = "/login", consumes = "application/json")
@@ -19,11 +28,24 @@ public class AuthController {
         return authService.login(request);
     }
 
-
-    
     @PostMapping(value = "/register", consumes = "application/json")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
         return authService.register(request);
 
+    }
+
+    @GetMapping(value = "/oauth")
+    public ResponseEntity<String> oauthManager(HttpServletRequest request,  HttpServletResponse response) {
+
+        String username = response.getHeader("username");
+        Collection<String> headers = response.getHeaderNames();
+        Iterator<String> headersIterator = headers.iterator();
+        while(headersIterator.hasNext()){
+            logger.info("Header: " + headersIterator.next());
+        }
+        logger.info("EL CORREOOOO ES :" + username);
+
+        //Implementar la lógica de creación del token.
+        return authService.manageOAuth(response);
     }
 }
