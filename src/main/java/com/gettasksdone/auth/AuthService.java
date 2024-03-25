@@ -1,9 +1,8 @@
 package com.gettasksdone.auth;
 
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,19 +17,15 @@ import com.gettasksdone.jwt.JwtService;
 import com.gettasksdone.model.Usuario;
 import com.gettasksdone.model.Usuario.Rol;
 import com.gettasksdone.repository.UsuarioRepository;
-
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
-
 
 @Service
 @RequiredArgsConstructor
 @SuppressWarnings("null")
 public class AuthService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    // private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final UsuarioRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -90,35 +85,29 @@ public class AuthService {
 
     public ResponseEntity<String> manageOAuth(HttpServletRequest request){
         String username = (String) request.getSession().getAttribute("username");
-        
-        AuthResponse tokenR = null;
-        logger.info("USER EMAIL:"+username);
+        AuthResponse tokenR;
+        // logger.info("USER EMAIL: "+ username);
         Optional<Usuario> usuario = userRepository.findByUsername(username);
         if(usuario.isEmpty()){
             usuario = userRepository.findByEmail(username);
-            if(usuario.isEmpty()){
-                    Usuario user = Usuario.builder()
-                        .username(username)
-                        .password(passwordEncoder.encode(username))
-                        .email(username)
-                        .rol(Rol.USUARIO)
-                        .build();
-                    
-                    //Un nuevo usuario
-                    userRepository.save(user);
-                    tokenR = AuthResponse
-                    .builder()
+            if(usuario.isEmpty()){ //Nuevo usuario para dar de alta por SSO (Todos sus campos seran el email)
+                Usuario user = Usuario.builder()
+                    .username(username)
+                    .password(passwordEncoder.encode(username))
+                    .email(username)
+                    .rol(Rol.USUARIO)
+                    .build();
+                userRepository.save(user);
+                tokenR = AuthResponse.builder()
                     .token(jwtService.getToken(user))
                     .build();
             }else{ //Dado de alta previamente de forma "normal"
-                tokenR = AuthResponse
-                .builder()
+                tokenR = AuthResponse.builder()
                 .token(jwtService.getToken(usuario.get()))
                 .build();
             }
         }else{ //Dado de alta previamente por SSO
-            tokenR = AuthResponse
-            .builder()
+            tokenR = AuthResponse.builder()
             .token(jwtService.getToken(usuario.get()))
             .build();
         }

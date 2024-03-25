@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -51,16 +50,14 @@ public class SecurityConfig {
                 .disable())
             .authorizeHttpRequests(authRequest ->
               authRequest
-                //.requestMatchers("/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
                 .requestMatchers("/api/ping").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated() //Necesitamos estar autenticados para poder ver los diferentes endpoint
                 )
-	    .oauth2Login(oauth2login -> oauth2login
+	        .oauth2Login(oauth2login -> oauth2login
                 .successHandler(successHandler))
-        //.oauth2Login(Customizer.withDefaults())
             .sessionManagement(sessionManager -> 
                 sessionManager
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
