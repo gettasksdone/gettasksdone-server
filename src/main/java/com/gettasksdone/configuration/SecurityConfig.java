@@ -45,7 +45,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
         return http
-            .csrf(csrf -> 
+            .csrf(csrf ->
                 csrf
                 .disable())
             .authorizeHttpRequests(authRequest ->
@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated() //Necesitamos estar autenticados para poder ver los diferentes endpoint
                 )
-	    .oauth2Login(oauth2login -> oauth2login
+	        .oauth2Login(oauth2login -> oauth2login
                 .successHandler(successHandler))
             .sessionManagement(sessionManager -> 
                 sessionManager
