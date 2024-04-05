@@ -60,7 +60,7 @@ CREATE TABLE etiqueta(
 CREATE TABLE nota(  
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contenido TEXT NOT NULL,
-    creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    creacion DATETIME,
     usuario_id bigint NOT NULL,
     proyecto_id bigint,
     tarea_id bigint
@@ -89,7 +89,7 @@ CREATE TABLE check_item(
 CREATE TABLE proyecto(  
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nombre TEXT NOT NULL,
-    inicio DATETIME DEFAULT CURRENT_TIMESTAMP,
+    inicio DATETIME,
     fin DATETIME NOT NULL,
     descripcion TEXT NOT NULL,
     estado TEXT NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE tarea(
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contexto_id bigint NOT NULL,
     descripcion TEXT NOT NULL,
-    creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    creacion DATETIME,
     vencimiento DATETIME,
     estado TEXT NOT NULL,
     prioridad int NOT NULL,
@@ -182,6 +182,15 @@ CREATE TABLE tarea_check_items(
 
 ALTER TABLE `usuario`
   ADD UNIQUE (username, email);
+
+ALTER TABLE `tarea`
+  MODIFY `creacion` DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `nota`
+  MODIFY `creacion` DATETIME DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `proyecto`
+  MODIFY `inicio` DATETIME DEFAULT CURRENT_TIMESTAMP;
 
 --
 -- Indices de la tabla `tarea_check_items`
