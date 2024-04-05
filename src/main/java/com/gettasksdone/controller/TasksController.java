@@ -76,33 +76,59 @@ public class TasksController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createTask(@RequestBody Tarea task, @RequestParam("ProjectID") long projectID, HttpServletRequest request){
-        Optional<Proyecto> project = proyectoRepo.findById(projectID);
-        Tarea tarea;
+    public ResponseEntity<?> createTask(@RequestBody Tarea task, @RequestParam(required = false, name = "ProjectID") Optional<Long> projectID, HttpServletRequest request){
         List<Tarea> projectTasks;
-        if(project.isEmpty()){
-            return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
-        }else{
-            Long ownerID = project.get().getUsuario().getId();
-            Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
-            if(MHelpers.checkAccess(ownerID, authedUser.get())){
-                Optional<Usuario> user = usuarioRepo.findById(ownerID);
-                Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
-                if(context.isEmpty()){
-                    return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
-                }else{
-                    task.setContexto(context.get());
-                    task.setUsuario(user.get());
-                    task.setProyecto(project.get());
-                    tarea = tareaRepo.save(task);
-                    projectTasks = project.get().getTareas();
-                    projectTasks.add(tarea);
-                    project.get().setTareas(projectTasks);
-                    proyectoRepo.save(project.get());
-                    return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
-                }
-            }else{
+        if(!projectID.isEmpty()){
+            Optional<Proyecto> project = proyectoRepo.findById(projectID.get());
+            Tarea tarea;
+            if(project.isEmpty()){
                 return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
+            }else{
+                Long ownerID = project.get().getUsuario().getId();
+                Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
+                if(MHelpers.checkAccess(ownerID, authedUser.get())){
+                    Optional<Usuario> user = usuarioRepo.findById(ownerID);
+                    Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
+                    if(context.isEmpty()){
+                        return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
+                    }else{
+                        task.setContexto(context.get());
+                        task.setUsuario(user.get());
+                        task.setProyecto(project.get());
+                        tarea = tareaRepo.save(task);
+                        projectTasks = project.get().getTareas();
+                        projectTasks.add(tarea);
+                        project.get().setTareas(projectTasks);
+                        proyectoRepo.save(project.get());
+                        return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
+                    }
+                }else{
+                    return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
+                }
+            }
+        }else{
+            Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
+            List<Proyecto> projects = proyectoRepo.findByUsuario(authedUser);
+            Proyecto inbox = null;
+            for(int i = 0; i < projects.size(); i++){
+                if(projects.get(i).getNombre().equals("inbox")){
+                    inbox = projects.get(i);
+                    break;
+                }
+            }
+            Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
+            if(context.isEmpty()){
+                return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
+            }else{
+                task.setContexto(context.get());
+                task.setUsuario(authedUser);
+                task.setProyecto(inbox);
+                Tarea tarea = tareaRepo.save(task);
+                projectTasks = inbox.getTareas();
+                projectTasks.add(tarea);
+                inbox.setTareas(projectTasks);
+                proyectoRepo.save(inbox);
+                return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
             }
         }
     }

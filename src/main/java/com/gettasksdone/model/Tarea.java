@@ -29,7 +29,6 @@ public class Tarea {
     private Contexto contexto;
     @Column(nullable = false)
     private String descripcion;
-    @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creacion;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -1,8 +1,11 @@
 package com.gettasksdone.auth;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,8 +17,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.gettasksdone.jwt.JwtService;
+import com.gettasksdone.model.Proyecto;
 import com.gettasksdone.model.Usuario;
 import com.gettasksdone.model.Usuario.Rol;
+import com.gettasksdone.repository.ProyectoRepository;
 import com.gettasksdone.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +31,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
     // private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    @Autowired
+    private ProyectoRepository proyectoRepo;
     private final UsuarioRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -48,7 +55,7 @@ public class AuthService {
     }
 
     public ResponseEntity<String> register(RegisterRequest request){
-
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Optional<Usuario> usuario = userRepository.findByUsername(request.getUsername());
         if(usuario.isEmpty()){
             usuario = userRepository.findByEmail(request.getEmail());
@@ -60,7 +67,19 @@ public class AuthService {
                     .rol(Rol.USUARIO)
                     .build();
                 
-                userRepository.save(user);
+                /*
+                * Se guarda el usuario nuevo en la BD y se construye un proyecto genérico Inbox asignado a ese usuario
+                */
+                Usuario newUser = userRepository.save(user);
+                Proyecto inbox = Proyecto.builder()
+                    .nombre("inbox")
+                    .descripcion("inbox")
+                    .estado("inbox")
+                    .usuario(newUser)
+                    .inicio(LocalDateTime.now())
+                    .fin(LocalDateTime.parse("9999-12-31 23:59:59", timeFormat))
+                    .build();
+                proyectoRepo.save(inbox);
                 /**
                  * 
                  * Construir la respuesta :
@@ -84,6 +103,7 @@ public class AuthService {
     }
 
     public ResponseEntity<String> manageOAuth(HttpServletRequest request){
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String username = (String) request.getSession().getAttribute("username");
         AuthResponse tokenR;
         // logger.info("USER EMAIL: "+ username);
@@ -97,7 +117,19 @@ public class AuthService {
                     .email(username)
                     .rol(Rol.USUARIO)
                     .build();
-                userRepository.save(user);
+                /*
+                * Se guarda el usuario nuevo en la BD y se construye un proyecto genérico Inbox asignado a ese usuario
+                */
+                Usuario newUser = userRepository.save(user);
+                Proyecto inbox = Proyecto.builder()
+                    .nombre("inbox")
+                    .descripcion("inbox")
+                    .estado("inbox")
+                    .usuario(newUser)
+                    .inicio(LocalDateTime.now())
+                    .fin(LocalDateTime.parse("9999-12-31 23:59:59", timeFormat))
+                    .build();
+                proyectoRepo.save(inbox);
                 tokenR = AuthResponse.builder()
                     .token(jwtService.getToken(user))
                     .build();
