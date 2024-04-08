@@ -71,6 +71,9 @@ public class ProjectController {
     @PostMapping("/create")
     public ResponseEntity<?> createProject(@RequestBody Proyecto project, HttpServletRequest request){
         Optional<Usuario> user = usuarioRepo.findById(MHelpers.getIdToken(request));
+        if(project.getNombre().toLowerCase().equals("inbox")){
+            return new ResponseEntity<>("Inbox is a reservated project name.", HttpStatus.BAD_REQUEST);
+        }
         project.setUsuario(user.get());
         Proyecto proyecto = proyectoRepo.save(project);
         return new ResponseEntity<>(proyecto.getId(), HttpStatus.OK);
@@ -85,6 +88,9 @@ public class ProjectController {
         Long ownerID = proyecto.get().getUsuario().getId();
         Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
         if(MHelpers.checkAccess(ownerID, authedUser)){
+            if(proyecto.get().getNombre().equals("inbox")){
+                return new ResponseEntity<>("Inbox project is protected from deletion or modification", HttpStatus.BAD_REQUEST);
+            }
             proyecto.get().setNombre(project.getNombre());
             proyecto.get().setDescripcion(project.getDescripcion());
             proyecto.get().setEstado(project.getEstado());
@@ -106,6 +112,9 @@ public class ProjectController {
             Long ownerID = project.get().getUsuario().getId();
             Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
             if(MHelpers.checkAccess(ownerID, authedUser)){
+                if(project.get().getNombre().equals("inbox")){
+                    return new ResponseEntity<>("Inbox project is protected from deletion or modification", HttpStatus.BAD_REQUEST);
+                }
                 proyectoRepo.deleteById(id);
                 return new ResponseEntity<>("Project deleted", HttpStatus.OK);
             }else{
