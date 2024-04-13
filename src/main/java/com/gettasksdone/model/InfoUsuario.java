@@ -18,7 +18,6 @@ public class InfoUsuario {
     private Usuario usuario;
     @Column(nullable = false)
     private String nombre;
-    @Column(nullable = false)
     private long telefono;
     @Column(nullable = false)
     private String puesto;
