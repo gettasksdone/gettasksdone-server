@@ -134,7 +134,7 @@ public class TasksController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<?> updateTask(@RequestBody Tarea task, @PathVariable("id") Long id, HttpServletRequest request){
+    public ResponseEntity<?> updateTask(@RequestBody Tarea task, @PathVariable("id") Long id, @RequestParam(required = false, name = "ProjectID") Optional<Long> projectID, HttpServletRequest request){
         Optional<Tarea> tarea = tareaRepo.findById(id);
         Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
         if(tarea.isEmpty()){
@@ -146,12 +146,36 @@ public class TasksController {
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         Long ownerID = tarea.get().getUsuario().getId();
         if(MHelpers.checkAccess(ownerID, authedUser.get())){
+            tarea.get().setTitulo(task.getTitulo());
             tarea.get().setDescripcion(task.getDescripcion());
             tarea.get().setVencimiento(task.getVencimiento());
             tarea.get().setEstado(task.getEstado());
             tarea.get().setPrioridad(task.getPrioridad());
             tarea.get().setContexto(context.get());
-            tareaRepo.save(tarea.get());
+            if(!projectID.isEmpty()){ //Si no viene vacio es que hay que cambiar de proyecto
+                Proyecto oldProject = tarea.get().getProyecto();
+                List<Tarea> newTaskList = oldProject.getTareas();
+                for(int i = 0; i < newTaskList.size(); i++){ //Se busca la tarea en el proyecto anterior y se elimina
+                    if(newTaskList.get(i).getId() == tarea.get().getId()){
+                        newTaskList.remove(i);
+                        break;
+                    }
+                }
+                oldProject.setTareas(newTaskList);
+                proyectoRepo.save(oldProject); //Se actualiza el proyecto anterior
+                Optional<Proyecto> project = proyectoRepo.findById(projectID.get());
+                if(project.isEmpty()){
+                    return new ResponseEntity<>("Project not found", HttpStatus.BAD_REQUEST);
+                }
+                tarea.get().setProyecto(project.get());
+                tareaRepo.save(tarea.get());
+                newTaskList = project.get().getTareas();
+                newTaskList.add(tarea.get());
+                project.get().setTareas(newTaskList);
+                proyectoRepo.save(project.get());
+            }else{
+                tareaRepo.save(tarea.get());
+            }
             return new ResponseEntity<>("Task updated.", HttpStatus.OK);
         }else{
             return new ResponseEntity<>("Task not found", HttpStatus.BAD_REQUEST);

@@ -105,6 +105,7 @@ CREATE TABLE proyecto(
 CREATE TABLE tarea(  
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contexto_id bigint NOT NULL,
+    titulo TEXT NOT NULL,
     descripcion TEXT NOT NULL,
     creacion DATETIME,
     vencimiento DATETIME,

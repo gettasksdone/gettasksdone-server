@@ -21,10 +21,14 @@ public class AuthController {
         return authService.login(request);
     }
 
+    @PostMapping(value = "/sudoRegister", consumes = "application/json")
+    public ResponseEntity<String> sudoRegister(@RequestBody RegisterRequest request) { //Funciona SOLO si no hay otro administrador en el sistema
+        return authService.sudoRegister(request);
+    }
+
     @PostMapping(value = "/register", consumes = "application/json")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
         return authService.register(request);
-
     }
 
     @GetMapping(value = "/oauth")

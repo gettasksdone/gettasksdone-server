@@ -2,6 +2,7 @@ package com.gettasksdone.auth;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
 import java.util.Optional;
@@ -33,6 +34,8 @@ public class AuthService {
     // private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     @Autowired
     private ProyectoRepository proyectoRepo;
+    @Autowired
+    private UsuarioRepository usuarioRepo;
     private final UsuarioRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -52,6 +55,49 @@ public class AuthService {
 
         String token = jwtService.getToken(user);
         return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> sudoRegister(RegisterRequest request){
+        List<Usuario> adminUsers = usuarioRepo.findByRol(Rol.ADMINISTRADOR);
+        if(!adminUsers.isEmpty()){
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }else{
+            DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            Optional<Usuario> usuario = userRepository.findByUsername(request.getUsername());
+            if(!usuario.isEmpty()){
+                return new ResponseEntity<>("The username already exists.", HttpStatus.BAD_REQUEST);
+            }else{
+                usuario = userRepository.findByEmail(request.getEmail());
+                if(!usuario.isEmpty()){
+                    return new ResponseEntity<>("The email already exists.", HttpStatus.BAD_REQUEST);
+                }else{
+                    //Construye el usuario administrador
+                    Usuario user = Usuario.builder()
+                        .username(request.getUsername())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .email(request.getEmail())
+                        .rol(Rol.ADMINISTRADOR)
+                        .build();
+                    //Se almacena el usuario en la base de datos y se crea su proyecto generico inbox
+                    Usuario newUser = userRepository.save(user);
+                    Proyecto inbox = Proyecto.builder()
+                        .nombre("inbox")
+                        .descripcion("inbox")
+                        .estado("inbox")
+                        .usuario(newUser)
+                        .inicio(LocalDateTime.now())
+                        .fin(LocalDateTime.parse("9999-12-31 23:59:59", timeFormat))
+                        .build();
+                    proyectoRepo.save(inbox);
+                    //Se procesa su token de autenticacion y la retorna
+                    AuthResponse token = AuthResponse
+                    .builder()
+                    .token(jwtService.getToken(user))
+                    .build();
+                    return new ResponseEntity<>(token.getToken(), HttpStatus.OK);
+                }
+            }
+        }
     }
 
     public ResponseEntity<String> register(RegisterRequest request){
