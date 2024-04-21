@@ -133,19 +133,24 @@ public class ProjectController {
             if(tag.isEmpty()){
                 return new ResponseEntity<>("Tag not found", HttpStatus.BAD_REQUEST);
             }else{
-                Long ownerID = project.get().getUsuario().getId();
                 Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
-                if(MHelpers.checkAccess(ownerID, authedUser)){
-                    List<Etiqueta> tagList = project.get().getEtiquetas();
-                    if(tagList.contains(tag.get())){
-                        return new ResponseEntity<>("Tag already on the project.", HttpStatus.BAD_REQUEST);
+                Long tagOwner = tag.get().getUsuario().getId();
+                if(MHelpers.checkAccess(tagOwner, authedUser)){
+                    Long ownerID = project.get().getUsuario().getId();
+                    if(MHelpers.checkAccess(ownerID, authedUser)){
+                        List<Etiqueta> tagList = project.get().getEtiquetas();
+                        if(tagList.contains(tag.get())){
+                            return new ResponseEntity<>("Tag already on the project.", HttpStatus.BAD_REQUEST);
+                        }
+                        tagList.add(tag.get());
+                        project.get().setEtiquetas(tagList);
+                        proyectoRepo.save(project.get());
+                        return new ResponseEntity<>("Tag added to project.", HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
                     }
-                    tagList.add(tag.get());
-                    project.get().setEtiquetas(tagList);
-                    proyectoRepo.save(project.get());
-                    return new ResponseEntity<>("Tag added to project.", HttpStatus.OK);
                 }else{
-                    return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
                 }
             }
         }
@@ -161,19 +166,24 @@ public class ProjectController {
             if(tag.isEmpty()){
                 return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
             }else{
-                Long ownerID = project.get().getUsuario().getId();
                 Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
-                if(MHelpers.checkAccess(ownerID, authedUser)){
-                    List<Etiqueta> tagList = project.get().getEtiquetas();
-                    if(!tagList.contains(tag.get())){
-                        return new ResponseEntity<>("Tag not present in the project.", HttpStatus.BAD_REQUEST);
+                Long tagOwner = tag.get().getUsuario().getId();
+                if(MHelpers.checkAccess(tagOwner, authedUser)){
+                    Long ownerID = project.get().getUsuario().getId();
+                    if(MHelpers.checkAccess(ownerID, authedUser)){
+                        List<Etiqueta> tagList = project.get().getEtiquetas();
+                        if(!tagList.contains(tag.get())){
+                            return new ResponseEntity<>("Tag not present in the project.", HttpStatus.BAD_REQUEST);
+                        }
+                        tagList.remove(tag.get());
+                        project.get().setEtiquetas(tagList);
+                        proyectoRepo.save(project.get());
+                        return new ResponseEntity<>("Tag deleted from project.", HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
                     }
-                    tagList.remove(tag.get());
-                    project.get().setEtiquetas(tagList);
-                    proyectoRepo.save(project.get());
-                    return new ResponseEntity<>("Tag deleted from project.", HttpStatus.OK);
                 }else{
-                    return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
                 }
             }
         }

@@ -209,20 +209,26 @@ public class TasksController {
             if(tag.isEmpty()){
                 return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
             }else{
-                Long ownerID = task.get().getUsuario().getId();
                 Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
-                if(MHelpers.checkAccess(ownerID, authedUser)){
-                    List<Etiqueta> tagList = task.get().getEtiquetas();
-                    if(tagList.contains(tag.get())){
-                        return new ResponseEntity<>("Tag already on this task.", HttpStatus.BAD_REQUEST);
+                Long tagOwner = tag.get().getUsuario().getId();
+                if(MHelpers.checkAccess(tagOwner, authedUser)){
+                    Long ownerID = task.get().getUsuario().getId();
+                    if(MHelpers.checkAccess(ownerID, authedUser)){
+                        List<Etiqueta> tagList = task.get().getEtiquetas();
+                        if(tagList.contains(tag.get())){
+                            return new ResponseEntity<>("Tag already on this task.", HttpStatus.BAD_REQUEST);
+                        }
+                        tagList.add(tag.get());
+                        task.get().setEtiquetas(tagList);
+                        tareaRepo.save(task.get());
+                        return new ResponseEntity<>("Tag added to task.", HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
                     }
-                    tagList.add(tag.get());
-                    task.get().setEtiquetas(tagList);
-                    tareaRepo.save(task.get());
-                    return new ResponseEntity<>("Tag added to task.", HttpStatus.OK);
                 }else{
-                    return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
                 }
+                
             }
         }
     }
@@ -237,19 +243,24 @@ public class TasksController {
             if(tag.isEmpty()){
                 return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
             }else{
-                Long ownerID = task.get().getUsuario().getId();
                 Usuario authedUser = usuarioRepo.findById(MHelpers.getIdToken(request)).get();
-                if(MHelpers.checkAccess(ownerID, authedUser)){
-                    List<Etiqueta> tagList = task.get().getEtiquetas();
-                    if(!tagList.contains(tag.get())){
-                        return new ResponseEntity<>("Tag not present on this task.", HttpStatus.BAD_REQUEST);
+                Long tagOwner = tag.get().getUsuario().getId();
+                if(MHelpers.checkAccess(tagOwner, authedUser)){
+                    Long ownerID = task.get().getUsuario().getId();
+                    if(MHelpers.checkAccess(ownerID, authedUser)){
+                        List<Etiqueta> tagList = task.get().getEtiquetas();
+                        if(!tagList.contains(tag.get())){
+                            return new ResponseEntity<>("Tag not present on this task.", HttpStatus.BAD_REQUEST);
+                        }
+                        tagList.remove(tag.get());
+                        task.get().setEtiquetas(tagList);
+                        tareaRepo.save(task.get());
+                        return new ResponseEntity<>("Tag deleted from task.", HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
                     }
-                    tagList.remove(tag.get());
-                    task.get().setEtiquetas(tagList);
-                    tareaRepo.save(task.get());
-                    return new ResponseEntity<>("Tag deleted from task.", HttpStatus.OK);
                 }else{
-                    return new ResponseEntity<>("Task not found.", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Tag not found.", HttpStatus.BAD_REQUEST);
                 }
             }
         }
