@@ -11,10 +11,9 @@ function confirmacion() {
 }
 
 function mostrar_menu() {
-    echo "PARA EVITAR PROBLEMAS AL UTILIZAR EL SCRIPT SE RECOMIENDA EJECUTARLO EN SUDO"
     echo "Selecciona una opción:"
     echo "1) Iniciar servidor"
-    echo "2) Reestablecer servidor (ZONA DE PELIGRO)"
+    echo "2) Restablecer servidor (ZONA DE PELIGRO)"
     echo "0) Para salir "
 }
 
