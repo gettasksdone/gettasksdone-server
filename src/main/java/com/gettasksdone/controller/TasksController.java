@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import com.gettasksdone.model.Tarea;
 import com.gettasksdone.model.Usuario;
 import com.gettasksdone.model.Proyecto;
+import com.gettasksdone.dto.TareaDTO;
 import com.gettasksdone.model.Contexto;
 import com.gettasksdone.model.Etiqueta;
 import com.gettasksdone.repository.ProyectoRepository;
@@ -69,6 +70,16 @@ public class TasksController {
     private TareaService tareaService;
 
     @GetMapping("/authed")
+    @Operation(
+        summary = "Obtiene las tareas del usuario autenticado.",
+        description = "Se obtienen las tareas registradas en la aplicación por el usuario autenticado actualmente.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer [token]"))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = TareaDTO.class)), mediaType = "application/json")}, description = "La llamada ha respondido correctamente.")
+    })
     public ResponseEntity<?> tasksFromUser(HttpServletRequest request) {
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
         return new ResponseEntity<>(tareaService.findByUsuario(authedUser.get()), HttpStatus.OK);
@@ -76,11 +87,35 @@ public class TasksController {
     
     @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @GetMapping("/getTasks")
+    @Operation(
+        summary = "Obtiene todos las tareas.",
+        description = "Se obtienen todos las tareas registradas en la aplicación. REQUIERE PRIVILEGIOS DE ADMINISTRADOR.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer [token]"))
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "200", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = TareaDTO.class)), mediaType = "application/json")}, description = "La llamada ha respondido correctamente.")
+    })
 	public ResponseEntity<?> allTasks(){
 		return new ResponseEntity<>(tareaService.findAll(), HttpStatus.OK);
 	}
 
     @GetMapping("/{id}")
+    @Operation(
+        summary = "Busca una tarea.",
+        description = "Se busca una tarea específica en la aplicación. Solamente el usuario que haya creado la tarea o un administrador podrán verlo.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer {token}")),
+            @Parameter(in = ParameterIn.PATH, required = true, name = "id", description = "Identificador de la tarea a consultar", schema = @Schema(format = "{id}", example = "1"))
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(example = "Task not found."), mediaType = "string")}, description = "La tarea no existe en la aplicación, o no se tiene permiso para consultarla."),
+        @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = TareaDTO.class), mediaType = "application/json")}, description = "La llamada ha respondido correctamente.")
+    })
     public ResponseEntity<?> findById(@PathVariable("id") Long id, HttpServletRequest request){
         Optional<Tarea> task = tareaRepo.findById(id);
         if(task.isEmpty()){
@@ -97,6 +132,23 @@ public class TasksController {
     }
 
     @PostMapping("/create")
+    @Operation(
+        summary = "Crea una tarea.",
+        description = "Se da de alta una tarea en la aplicación.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer {token}")),
+            @Parameter(in = ParameterIn.QUERY, required = false, name = "ProjectID", description = "Identificador del proyecto a donde se desea asignar la tarea", schema = @Schema(format = "ProjectID={id}", example = "ProjectID=3"))
+        }
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Parámetros de entrada de la tarea.", required = true, content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"contexto\": {\"id\": 1}, \"titulo\": \"Tarea de prueba\", \"descripcion\": \"Este es un proyecto de prueba\", \"creacion\": \"2024-12-31 23:59:59\", \"vencimiento\": \"2024-12-31 23:59:59\", \"estado\": \"agendado\", \"prioridad\": 0}")))
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Long.class), mediaType = "string")}, description = "La tarea se ha creado correctamente."),
+        @ApiResponse(responseCode = "400", content = {@Content(mediaType = "text/plain", examples = { @ExampleObject(name = "El contexto especificado no se ha encontrado en el sistema, o no se tiene permisos para utilizarlo", value = "Context not found."),
+                                                                                                      @ExampleObject(name = "El proyecto especificado no se ha encontrado en el sistema, o no se tiene permisos para utilizarlo", value = "Project not found.") } )},
+                    description = "Ha ocurrido un error al procesar la solicitud.")
+    })
     public ResponseEntity<?> createTask(@RequestBody Tarea task, @RequestParam(required = false, name = "ProjectID") Optional<Long> projectID, HttpServletRequest request){
         List<Tarea> projectTasks;
         if(!projectID.isEmpty()){
@@ -155,6 +207,25 @@ public class TasksController {
     }
 
     @PatchMapping("/update/{id}")
+    @Operation(
+        summary = "Modifica una tarea.",
+        description = "Se modifica una tarea existente en la aplicación. Solo el usuario que ha creado la tarea o un administrador pueden modificarla.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer {token}")),
+            @Parameter(in = ParameterIn.PATH, required = true, name = "id", description = "Identificador de la tarea a modificar", schema = @Schema(format = "{id}", example = "1")),
+            @Parameter(in = ParameterIn.QUERY, required = false, name = "ProjectID", description = "Identificador del proyecto a donde se desea mover la tarea", schema = @Schema(format = "ProjectID={id}", example = "ProjectID=3"))
+        }
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Parámetros de entrada de la tarea.", required = true, content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"contexto\": {\"id\": 1}, \"titulo\": \"Tarea de prueba\", \"descripcion\": \"Este es un proyecto de prueba\", \"creacion\": \"2024-12-31 23:59:59\", \"vencimiento\": \"2024-12-31 23:59:59\", \"estado\": \"agendado\", \"prioridad\": 0}")))
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(example = "Task updated."), mediaType = "string")}, description = "La tarea se ha modificado correctamente."),
+        @ApiResponse(responseCode = "400", content = {@Content(mediaType = "text/plain", examples = { @ExampleObject(name = "No se ha encontrado la tarea, o no se tiene autorización para modificarla.", value = "Task not found."),
+                                                                                                      @ExampleObject(name = "No se ha encontrado el contexto, o no se tiene autorización para utilizarlo.", value = "Context not found."),
+                                                                                                      @ExampleObject(name = "No se ha encontrado el proyecto, o no se tiene autorización para utilizarlo.", value = "Project not found.") } )},
+                    description = "Ha ocurrido un error al procesar la solicitud.")
+    })
     public ResponseEntity<?> updateTask(@RequestBody Tarea task, @PathVariable("id") Long id, @RequestParam(required = false, name = "ProjectID") Optional<Long> projectID, HttpServletRequest request){
         Optional<Tarea> tarea = tareaRepo.findById(id);
         Optional<Contexto> context = contextoRepo.findById(task.getContexto().getId());
@@ -176,14 +247,14 @@ public class TasksController {
             if(!projectID.isEmpty()){ //Si no viene vacio es que hay que cambiar de proyecto
                 Proyecto oldProject = tarea.get().getProyecto();
                 List<Tarea> newTaskList = oldProject.getTareas();
-                for(int i = 0; i < newTaskList.size(); i++){ //Se busca la tarea en el proyecto anterior y se elimina
+                for(int i = 0; i < newTaskList.size(); i++){ //Se busca la tarea en la tarea anterior y se elimina
                     if(newTaskList.get(i).getId() == tarea.get().getId()){
                         newTaskList.remove(i);
                         break;
                     }
                 }
                 oldProject.setTareas(newTaskList);
-                proyectoRepo.save(oldProject); //Se actualiza el proyecto anterior
+                proyectoRepo.save(oldProject); //Se actualiza la tarea anterior
                 Optional<Proyecto> project = proyectoRepo.findById(projectID.get());
                 if(project.isEmpty()){
                     return new ResponseEntity<>("Project not found", HttpStatus.BAD_REQUEST);
@@ -204,6 +275,20 @@ public class TasksController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @Operation(
+        summary = "Elimina una tarea.",
+        description = "Se borra una tarea de la aplicación. Solo el usuario que ha creado la tarea o un administrador pueden borrarla.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer {token}")),
+            @Parameter(in = ParameterIn.PATH, required = true, name = "id", description = "Identificador de la tarea a eliminar", schema = @Schema(format = "{id}", example = "1"))
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(example = "Task deleted."), mediaType = "string")}, description = "La tarea se ha eliminado correctamente."),
+        @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(example = "Task not found."), mediaType = "string")}, description = "No se ha encontrado la tarea, o no se tiene autorización para eliminarla.")
+    })
     public ResponseEntity<String> deleteTask(@PathVariable("id") Long id, HttpServletRequest request){
         Optional<Tarea> task = tareaRepo.findById(id);
         if(task.isEmpty()){
@@ -221,6 +306,24 @@ public class TasksController {
     }
 
     @PatchMapping("/addTag/{id}")
+    @Operation(
+        summary = "Añade una etiqueta a una tarea.",
+        description = "Se añade una etiqueta a una tarea existente en la aplicación. Solo el usuario que ha creado la tarea y etiqueta o un administrador puede interactuar con estos componentes.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer {token}")),
+            @Parameter(in = ParameterIn.PATH, required = true, name = "id", description = "Identificador de la tarea al que se le añadirá la etiqueta", schema = @Schema(format = "{id}", example = "1")),
+            @Parameter(in = ParameterIn.QUERY, required = true, name = "TagID", description = "Identificador de la etiqueta a agregar", schema = @Schema(format = "TagID={id}", example = "TagID=1"))
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(example = "Tag added to task."), mediaType = "string")}, description = "La etiqueta se ha añadido a la tarea correctamente."),
+        @ApiResponse(responseCode = "400", content = {@Content(mediaType = "text/plain", examples = { @ExampleObject(name = "No se ha encontrado la tarea, o no se tiene autorización para modificarla.", value = "Task not found."),
+                                                                                                      @ExampleObject(name = "La etiqueta ya está presente en la tarea.", value = "Tag already on this task."),
+                                                                                                      @ExampleObject(name = "No se ha encontrado la etiqueta, o no se tiene autorización para utilizarla.", value = "Tag not found.") } )},
+                    description = "Ha ocurrido un error al procesar la solicitud.")
+    })
     public ResponseEntity<?> addTagToTask(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id, HttpServletRequest request){
         Optional<Tarea> task = tareaRepo.findById(id);
         if(task.isEmpty()){
@@ -255,6 +358,24 @@ public class TasksController {
     }
 
     @PatchMapping("/removeTag/{id}")
+    @Operation(
+        summary = "Elimina una etiqueta de una tarea.",
+        description = "Se quita una etiqueta de una tarea existente en la aplicación. Solo el usuario que ha creado la tarea y etiqueta o un administrador puede interactuar con estos componentes.",
+        security = @SecurityRequirement(name = "Authorization"),
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, required = true, name = "Authorization", description = "Token de autenticación", schema = @Schema(format = "Bearer {token}")),
+            @Parameter(in = ParameterIn.PATH, required = true, name = "id", description = "Identificador de la tarea al que se le eliminará la etiqueta", schema = @Schema(format = "{id}", example = "1")),
+            @Parameter(in = ParameterIn.QUERY, required = true, name = "TagID", description = "Identificador de la etiqueta a remover", schema = @Schema(format = "TagID={id}", example = "TagID=1"))
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "CONN_REFUSED", content = {@Content(schema = @Schema())} , description = "El servidor ha rechazado la conexión porque no se tiene autorización para acceder a esta llamada."),
+        @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(example = "Tag deleted from task."), mediaType = "string")}, description = "La etiqueta se ha eliminado de la tarea correctamente."),
+        @ApiResponse(responseCode = "400", content = {@Content(mediaType = "text/plain", examples = { @ExampleObject(name = "No se ha encontrado la tarea, o no se tiene autorización para modificarla.", value = "Task not found."),
+                                                                                                      @ExampleObject(name = "La etiqueta no está asignada en la tarea.", value = "Tag not present on this task."),
+                                                                                                      @ExampleObject(name = "No se ha encontrado la etiqueta, o no se tiene autorización para utilizarla.", value = "Tag not found.") } )},
+                    description = "Ha ocurrido un error al procesar la solicitud.")
+    })
     public ResponseEntity<?> delTagFromTask(@RequestParam("TagID") Long tagId, @PathVariable("id") Long id, HttpServletRequest request){
         Optional<Tarea> task = tareaRepo.findById(id);
         if(task.isEmpty()){
