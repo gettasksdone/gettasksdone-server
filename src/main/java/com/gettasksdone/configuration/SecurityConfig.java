@@ -50,10 +50,14 @@ public class SecurityConfig {
                 .disable())
             .authorizeHttpRequests(authRequest ->
               authRequest
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/ping").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/oauth2/**").permitAll()
-                .requestMatchers("/api/ping").permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                //Permite que funcione la UI de Swagger (Documentacion)
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated() //Necesitamos estar autenticados para poder ver los diferentes endpoint
                 )
 	        .oauth2Login(oauth2login -> oauth2login

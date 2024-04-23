@@ -23,11 +23,32 @@ import com.gettasksdone.repository.TareaRepository;
 import com.gettasksdone.repository.UsuarioRepository;
 import com.gettasksdone.service.CheckItemService;
 import com.gettasksdone.utils.MHelpers;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/check")
 @SuppressWarnings("null")
+@Tag(name = "Controlador de elementos de comprobación", 
+    description = "En este controlador se encuentran todas las operaciones relativas a gestionar los elementos de comprobación de la aplicación.")
+@SecurityScheme(
+    type = SecuritySchemeType.APIKEY, 
+    name = "Authorization",
+    in = SecuritySchemeIn.HEADER,
+    scheme = "Authorization")
 public class CheckItemController {
     @Autowired
     private CheckItemRepository checkRepo;
