@@ -165,15 +165,20 @@ public class TasksController {
                     if(context.isEmpty()){
                         return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
                     }else{
-                        task.setContexto(context.get());
-                        task.setUsuario(user.get());
-                        task.setProyecto(project.get());
-                        tarea = tareaRepo.save(task);
-                        projectTasks = project.get().getTareas();
-                        projectTasks.add(tarea);
-                        project.get().setTareas(projectTasks);
-                        proyectoRepo.save(project.get());
-                        return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
+                        Long contextOwner = context.get().getUsuario().getId();
+                        if(MHelpers.checkAccess(contextOwner, authedUser.get())){
+                            task.setContexto(context.get());
+                            task.setUsuario(user.get());
+                            task.setProyecto(project.get());
+                            tarea = tareaRepo.save(task);
+                            projectTasks = project.get().getTareas();
+                            projectTasks.add(tarea);
+                            project.get().setTareas(projectTasks);
+                            proyectoRepo.save(project.get());
+                            return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
+                        }else{
+                            return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
+                        }
                     }
                 }else{
                     return new ResponseEntity<>("Project not found.", HttpStatus.BAD_REQUEST);
@@ -193,15 +198,20 @@ public class TasksController {
             if(context.isEmpty()){
                 return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
             }else{
-                task.setContexto(context.get());
-                task.setUsuario(authedUser);
-                task.setProyecto(inbox);
-                Tarea tarea = tareaRepo.save(task);
-                projectTasks = inbox.getTareas();
-                projectTasks.add(tarea);
-                inbox.setTareas(projectTasks);
-                proyectoRepo.save(inbox);
-                return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
+                Long contextOwner = context.get().getUsuario().getId();
+                if(MHelpers.checkAccess(contextOwner, authedUser)){
+                    task.setContexto(context.get());
+                    task.setUsuario(authedUser);
+                    task.setProyecto(inbox);
+                    Tarea tarea = tareaRepo.save(task);
+                    projectTasks = inbox.getTareas();
+                    projectTasks.add(tarea);
+                    inbox.setTareas(projectTasks);
+                    proyectoRepo.save(inbox);
+                    return new ResponseEntity<>(tarea.getId(), HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>("Context not found.", HttpStatus.BAD_REQUEST);
+                }
             }
         }
     }
@@ -236,39 +246,48 @@ public class TasksController {
             return new ResponseEntity<>("Context not found", HttpStatus.BAD_REQUEST);
         }
         Optional<Usuario> authedUser = usuarioRepo.findById(MHelpers.getIdToken(request));
-        Long ownerID = tarea.get().getUsuario().getId();
+        Long ownerID = tarea.get().getUsuario().getId(), contextOwner = context.get().getUsuario().getId();
         if(MHelpers.checkAccess(ownerID, authedUser.get())){
-            tarea.get().setTitulo(task.getTitulo());
-            tarea.get().setDescripcion(task.getDescripcion());
-            tarea.get().setVencimiento(task.getVencimiento());
-            tarea.get().setEstado(task.getEstado());
-            tarea.get().setPrioridad(task.getPrioridad());
-            tarea.get().setContexto(context.get());
-            if(!projectID.isEmpty()){ //Si no viene vacio es que hay que cambiar de proyecto
-                Proyecto oldProject = tarea.get().getProyecto();
-                List<Tarea> newTaskList = oldProject.getTareas();
-                for(int i = 0; i < newTaskList.size(); i++){ //Se busca la tarea en la tarea anterior y se elimina
-                    if(newTaskList.get(i).getId() == tarea.get().getId()){
-                        newTaskList.remove(i);
-                        break;
+            if(MHelpers.checkAccess(contextOwner, authedUser.get())){
+                tarea.get().setTitulo(task.getTitulo());
+                tarea.get().setDescripcion(task.getDescripcion());
+                tarea.get().setVencimiento(task.getVencimiento());
+                tarea.get().setEstado(task.getEstado());
+                tarea.get().setPrioridad(task.getPrioridad());
+                tarea.get().setContexto(context.get());
+                if(!projectID.isEmpty()){ //Si no viene vacio es que hay que cambiar de proyecto
+                    Optional<Proyecto> project = proyectoRepo.findById(projectID.get());
+                    if(project.isEmpty()){
+                        return new ResponseEntity<>("Project not found", HttpStatus.BAD_REQUEST);
                     }
+                    Long projectOwner = project.get().getUsuario().getId();
+                    if(MHelpers.checkAccess(projectOwner,authedUser.get())){
+                        Proyecto oldProject = tarea.get().getProyecto();
+                        List<Tarea> newTaskList = oldProject.getTareas();
+                        for(int i = 0; i < newTaskList.size(); i++){ //Se busca la tarea en la tarea anterior y se elimina
+                            if(newTaskList.get(i).getId() == tarea.get().getId()){
+                                newTaskList.remove(i);
+                                break;
+                            }
+                        }
+                        oldProject.setTareas(newTaskList);
+                        proyectoRepo.save(oldProject); //Se actualiza la tarea anterior
+                        tarea.get().setProyecto(project.get());
+                        tareaRepo.save(tarea.get());
+                        newTaskList = project.get().getTareas();
+                        newTaskList.add(tarea.get());
+                        project.get().setTareas(newTaskList);
+                        proyectoRepo.save(project.get());
+                    }else{
+                        return new ResponseEntity<>("Project not found", HttpStatus.BAD_REQUEST);
+                    }
+                }else{
+                    tareaRepo.save(tarea.get());
                 }
-                oldProject.setTareas(newTaskList);
-                proyectoRepo.save(oldProject); //Se actualiza la tarea anterior
-                Optional<Proyecto> project = proyectoRepo.findById(projectID.get());
-                if(project.isEmpty()){
-                    return new ResponseEntity<>("Project not found", HttpStatus.BAD_REQUEST);
-                }
-                tarea.get().setProyecto(project.get());
-                tareaRepo.save(tarea.get());
-                newTaskList = project.get().getTareas();
-                newTaskList.add(tarea.get());
-                project.get().setTareas(newTaskList);
-                proyectoRepo.save(project.get());
+                return new ResponseEntity<>("Task updated.", HttpStatus.OK);
             }else{
-                tareaRepo.save(tarea.get());
+                return new ResponseEntity<>("Context not found", HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>("Task updated.", HttpStatus.OK);
         }else{
             return new ResponseEntity<>("Task not found", HttpStatus.BAD_REQUEST);
         }
