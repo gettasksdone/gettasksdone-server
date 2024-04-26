@@ -90,8 +90,8 @@ CREATE TABLE proyecto(
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nombre TEXT NOT NULL,
     inicio DATETIME,
-    fin DATETIME NOT NULL,
-    descripcion TEXT NOT NULL,
+    fin DATETIME,
+    descripcion TEXT,
     estado TEXT NOT NULL,
     usuario_id bigint NOT NULL
 );
@@ -106,7 +106,7 @@ CREATE TABLE tarea(
     id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     contexto_id bigint NOT NULL,
     titulo TEXT NOT NULL,
-    descripcion TEXT NOT NULL,
+    descripcion TEXT,
     creacion DATETIME,
     vencimiento DATETIME,
     estado TEXT NOT NULL,
