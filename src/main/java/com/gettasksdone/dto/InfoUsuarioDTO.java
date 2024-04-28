@@ -16,4 +16,6 @@ public class InfoUsuarioDTO {
     String puesto;
     @Schema(required = true, example = "Recursos Humanos")
     String departamento;
+    @Schema(required = true, description = "Identificador del usuario propietario de esta información adicional.")
+    Long usuarioId;
 }

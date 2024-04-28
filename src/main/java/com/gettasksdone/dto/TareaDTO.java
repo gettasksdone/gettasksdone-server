@@ -30,4 +30,8 @@ public class TareaDTO {
     List<NotaDTO> notas;
     @Schema(required = false, description = "Lista de etiquetas de la tarea")
     List<EtiquetaDTO> etiquetas;
+    @Schema(required = true, description = "Identificador del proyecto asociado a la tarea.")
+    Long proyectoId;
+    @Schema(required = true, description = "Identificador del contexto asociado a la tarea.")
+    Long contextoId;
 }

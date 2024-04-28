@@ -12,4 +12,6 @@ public class CheckItemDTO {
     String contenido;
     @Schema(required = true, example = "false")
     boolean esta_marcado;
+    @Schema(required = true, description = "Identificador de la tarea asociada a este elemento de comprobación.")
+    Long tareaId;
 }

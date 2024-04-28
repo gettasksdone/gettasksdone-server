@@ -13,4 +13,8 @@ public class NotaDTO {
     String contenido;
     @Schema(required = true, example = "2024-12-31 23:59:59")
     LocalDateTime creacion;
+    @Schema(required = true, description = "Identificador de la tarea asociada a la nota.")
+    Long tareaId;
+    @Schema(required = true, description = "Identificador del proyecto asociado a la nota.")
+    Long proyectoId;
 }
