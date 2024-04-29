@@ -33,11 +33,14 @@ public class Tarea {
     @Column(nullable = false)
     @Schema(required = true, example = "Tarea de prueba")
     private String titulo;
+    @Column(nullable = true)
     @Schema(required = false, example = "Esta es una tarea de prueba.")
     private String descripcion;
+    @Column(nullable = true)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(required = false, example = "2024-31-12 23:59:59")
     private LocalDateTime creacion;
+    @Column(nullable = true)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(required = false, example = "2024-31-12 23:59:59")
     private LocalDateTime vencimiento;

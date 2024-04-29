@@ -37,10 +37,13 @@ public class Proyecto {
     private String nombre;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(required = false, example = "2024-31-12 23:59:59")
+    @Column(nullable = true)
     private LocalDateTime inicio;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(required = false, example = "2024-31-12 23:59:59")
+    @Column(nullable = true)
     private LocalDateTime fin;
+    @Column(nullable = true)
     @Schema(required = false, example = "Descripción del proyecto de pruebas.")
     private String descripcion;
     @Column(nullable = false)

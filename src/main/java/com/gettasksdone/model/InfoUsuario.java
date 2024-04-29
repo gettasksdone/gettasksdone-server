@@ -23,6 +23,7 @@ public class InfoUsuario {
     @Column(nullable = false)
     @Schema(required = true, example = "Pedro")
     private String nombre;
+    @Column(nullable = true)
     @Schema(required = false, example = "123456789")
     private long telefono;
     @Column(nullable = false)
