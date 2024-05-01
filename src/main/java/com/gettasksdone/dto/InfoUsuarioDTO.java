@@ -10,7 +10,7 @@ public class InfoUsuarioDTO {
     Long id;
     @Schema(required = true, example = "Pedro")
     String nombre;
-    @Schema(required = true, example = "123456789")
+    @Schema(required = false, example = "123456789")
     long telefono;
     @Schema(required = true, example = "Recultador")
     String puesto;

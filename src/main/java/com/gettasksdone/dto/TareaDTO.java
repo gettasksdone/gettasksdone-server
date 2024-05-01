@@ -12,11 +12,11 @@ public class TareaDTO {
     Long id;
     @Schema(required = true, example = "Tarea de prueba")
     String titulo;
-    @Schema(required = true, example = "Esta es la descripción de una tarea.")
+    @Schema(required = false, example = "Esta es la descripción de una tarea.")
     String descripcion;
-    @Schema(required = true, example = "2024-31-12 23:59:59")
+    @Schema(required = false, example = "2024-31-12 23:59:59")
     LocalDateTime creacion;
-    @Schema(required = true, example = "2024-31-12 23:59:59")
+    @Schema(required = false, example = "2024-31-12 23:59:59")
     LocalDateTime vencimiento;
     @Schema(required = true, description = "Estado actual de la tarea.")
     String estado;

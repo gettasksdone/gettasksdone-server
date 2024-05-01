@@ -12,11 +12,11 @@ public class ProyectoDTO {
     Long id;
     @Schema(required = true, example = "Proyecto de pruebas")
     String nombre;
-    @Schema(required = true, example = "2024-31-12 23:59:59")
+    @Schema(required = false, example = "2024-31-12 23:59:59")
     LocalDateTime inicio;
-    @Schema(required = true, example = "2024-31-12 23:59:59")
+    @Schema(required = false, example = "2024-31-12 23:59:59")
     LocalDateTime fin;
-    @Schema(required = true, description = "Descripción del proyecto")
+    @Schema(required = false, description = "Descripción del proyecto")
     String descripcion;
     @Schema(required = true, description = "Estado actual del proyecto")
     String estado;
