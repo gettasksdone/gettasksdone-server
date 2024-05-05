@@ -10,7 +10,6 @@ services:
       - MYSQL_URL=jdbc:mysql://db/getTasksDone
     volumes:
       - ./:/app
-    restart: always
     depends_on:
       db:
         condition: service_healthy
